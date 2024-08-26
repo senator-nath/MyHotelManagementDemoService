@@ -18,8 +18,7 @@ namespace MyHotelManagementDemoService.Domain.Entities
         public State State { get; set; }
 
 
-        public string CountryId { get; set; }
-        public Country Country { get; set; }
+       
         public ICollection<Booking> Bookings { get; set; }
         public List<FeedBack> Feedbacks { get; set; }
     }

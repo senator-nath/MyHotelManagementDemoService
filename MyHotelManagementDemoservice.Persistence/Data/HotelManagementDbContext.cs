@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using HotelManagement.Persistence.Configuration;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MyHotelManagementDemoService.Domain.Entities;
+using MyHotelManagementDemoService.Persistence.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,14 +17,17 @@ namespace MyHotelManagementDemoService.Persistence.Data
         {
 
         }
-        //public DbSet<Guest> Guest { get; set; }
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    modelBuilder.ApplyConfiguration(new GuestConfiguration());
+        public DbSet<User> Users { get; set; }
+        public DbSet<Refund> Refunds { get; set; }
+        public DbSet<Amenity> Amenities { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new RefundConfiguration());
+            modelBuilder.ApplyConfiguration(new AmenityConfiguration());
 
-
-        //    base.OnModelCreating(modelBuilder);
-        //}
+            base.OnModelCreating(modelBuilder);
+        }
     }
 
 }
