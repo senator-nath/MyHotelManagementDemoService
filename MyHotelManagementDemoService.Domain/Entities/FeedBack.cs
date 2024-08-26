@@ -12,8 +12,7 @@ namespace MyHotelManagementDemoService.Domain.Entities
         public string Comments { get; set; }
         public int Rating { get; set; } // e.g., 1 to 5 stars
         public DateTime DateSubmitted { get; set; }
-
-        // Foreign Keys
+ 
         public int UserId { get; set; }
         public User User { get; set; }
 

@@ -15,11 +15,11 @@ namespace MyHotelManagementDemoService.Domain.Entities
         public PaymentStatus Status { get; set; }
         public DateTime PaymentDate { get; set; }
 
-        // Foreign Key for the one-to-one relationship
+
         public int BookingId { get; set; }
         public Booking Booking { get; set; }
 
-        // Other Relationships
+
 
     }
 }

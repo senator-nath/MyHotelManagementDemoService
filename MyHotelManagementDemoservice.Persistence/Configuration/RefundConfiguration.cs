@@ -13,24 +13,18 @@ namespace MyHotelManagementDemoService.Persistence.Configuration
     {
         public void Configure(EntityTypeBuilder<Refund> builder)
         {
-            // Specify the table name (optional, defaults to the class name)
-            builder.ToTable("Refunds");
-
-            // Configure the primary key
             builder.HasKey(r => r.Id);
 
-            // Configure properties
             builder.Property(r => r.ReferenceDetails)
                 .IsRequired()
-                .HasMaxLength(100); // Example max length
+                .HasMaxLength(100);
 
             builder.Property(r => r.Amount)
                 .IsRequired()
-                .HasColumnType("decimal(18,2)"); // Specify decimal precision
-
+                .HasColumnType("decimal(18,2)");
             builder.Property(r => r.DateIssued)
                 .IsRequired()
-                .HasColumnType("datetime"); // Specify the date type
+                .HasColumnType("datetime");
         }
     }
 }

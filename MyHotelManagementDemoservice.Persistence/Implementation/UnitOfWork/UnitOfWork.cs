@@ -1,7 +1,9 @@
 ﻿using HotelManagement.Application.Contracts.Repository;
 using HotelManagement.Persistence.RepositoryImplementation.Repository;
+using MyHotelManagementDemoService.Application.Contracts.RepositoryContracts;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
 using MyHotelManagementDemoService.Persistence.Data;
+using MyHotelManagementDemoService.Persistence.Implementation.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +31,10 @@ namespace MyHotelManagementDemoService.Persistence.Implementation.UnitOfWork
         public IBookingRepository bookingRepository { get; }
 
         public IFeedbackRepository feedbackRepository { get; }
+
+        public IRoomAmenitiesRepository roomAmenitiesRepository { get; }
+        public IStateRepository stateRepository { get; }
+
         public UnitOfWork(HotelManagementDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -39,6 +45,8 @@ namespace MyHotelManagementDemoService.Persistence.Implementation.UnitOfWork
             refundRepository = new RefundRepository(dbContext);
             bookingRepository = new BookingRepository(dbContext);
             feedbackRepository = new FeedbackRepository(dbContext);
+            roomAmenitiesRepository = new RoomAmenitiesRepository(dbContext);
+            stateRepository = new StateRepository(dbContext);
 
         }
         public void Dispose()

@@ -19,10 +19,6 @@ namespace MyHotelManagementDemoService.Domain.Entities
         public int RoomId { get; set; }
         public Room Room { get; set; }
 
-
-
-
-        // One-to-One Relationship with Payment
-        public Payment Payment { get; set; }  // This represents the one-to-one relationship
+        public Payment Payment { get; set; }
     }
 }

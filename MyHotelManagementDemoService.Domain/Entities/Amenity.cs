@@ -11,10 +11,10 @@ namespace MyHotelManagementDemoService.Domain.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public bool IsActive { get; set; }  // Changed to bool for simplicity
+        public bool IsActive { get; set; }
 
-        // One-to-Many Relationship: One Amenity can be associated with many RoomAmenities
-        public int RoomAmenitiesId { get; set; } // Foreign key
+
+        public int RoomAmenitiesId { get; set; }
         public RoomAmenities RoomAmenities { get; set; }
     }
 }

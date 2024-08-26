@@ -13,29 +13,22 @@ namespace MyHotelManagementDemoService.Persistence.Configuration
     {
         public void Configure(EntityTypeBuilder<FeedBack> builder)
         {
-            // Specify the table name (optional, defaults to the class name)
-            builder.ToTable("Feedbacks");
-
-            // Configure the primary key
             builder.HasKey(fb => fb.Id);
 
-            // Configure properties
+
             builder.Property(fb => fb.Comments)
                 .IsRequired()
-                .HasMaxLength(500); // Example max length for comments
+                .HasMaxLength(500);
 
             builder.Property(fb => fb.Rating)
                 .IsRequired()
-                .HasDefaultValue(1) // Example default value
-                .HasColumnType("int"); // Specify the data type
+                .HasDefaultValue(1)
+                .HasColumnType("int");
 
             builder.Property(fb => fb.DateSubmitted)
                 .IsRequired()
-                .HasColumnType("datetime"); // Specify the date type
+                .HasColumnType("datetime");
 
-            // Configure relationships
-
-            // Many-to-One relationship with User
             builder.HasOne(fb => fb.User)
                 .WithMany(u => u.Feedbacks)
                 .HasForeignKey(fb => fb.UserId)

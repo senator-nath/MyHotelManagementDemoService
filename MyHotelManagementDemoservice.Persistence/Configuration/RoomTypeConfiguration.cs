@@ -1,6 +1,6 @@
-using HotelManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MyHotelManagementDemoService.Domain.Entities;
 
 namespace HotelManagement.Persistence.Configuration
 {
@@ -8,14 +8,20 @@ namespace HotelManagement.Persistence.Configuration
     {
         public void Configure(EntityTypeBuilder<RoomType> builder)
         {
-             builder.HasKey(rt => rt.Id);
+            builder.HasKey(rt => rt.Id);
 
-        builder.Property(rt => rt.Name)
-            .IsRequired()
-            .HasMaxLength(100);
 
-        builder.Property(rt => rt.Description)
-            .HasMaxLength(500);
+            builder.Property(rt => rt.TypeName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            builder.Property(rt => rt.Description)
+                .HasMaxLength(500);
+
+            builder.Property(rt => rt.AccessibilityFeatures)
+                .HasMaxLength(250);
+
+
         }
     }
 }

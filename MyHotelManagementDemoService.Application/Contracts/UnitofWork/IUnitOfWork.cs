@@ -1,4 +1,5 @@
 ﻿using HotelManagement.Application.Contracts.Repository;
+using MyHotelManagementDemoService.Application.Contracts.RepositoryContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +12,14 @@ namespace MyHotelManagementDemoService.Application.Contracts.UnitofWork
     {
         IUserRepository userRepository { get; }
         IAmenityRepository amenityRepository { get; }
-
+        IRoomAmenitiesRepository roomAmenitiesRepository { get; }
         IRoomRepository roomRepository { get; }
         IRoomTypeRepository roomTypeRepository { get; }
         IRefundRepository refundRepository { get; }
 
         IBookingRepository bookingRepository { get; }
         IFeedbackRepository feedbackRepository { get; }
+        IStateRepository stateRepository { get; }
 
         Task<int> Save();
     }
