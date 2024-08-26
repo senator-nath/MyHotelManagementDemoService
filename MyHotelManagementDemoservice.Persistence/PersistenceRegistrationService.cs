@@ -16,8 +16,6 @@ namespace MyHotelManagementDemoService.Persistence
     {
         public static IServiceCollection AddPersistenceService(this IServiceCollection services, IConfiguration config)
         {
-
-
             services.AddDbContext<HotelManagementDbContext>(Options => Options.UseSqlServer(config.GetConnectionString("defaultConnection")));
             services.AddIdentity<User, IdentityRole>()
         .AddEntityFrameworkStores<HotelManagementDbContext>()

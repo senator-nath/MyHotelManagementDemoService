@@ -14,11 +14,11 @@ namespace MyHotelManagementDemoService.Domain.Entities
         public string LastName { get; set; }
         public string AgeGroup { get; set; }
         public string Address { get; set; }
-        public string StateId { get; set; }
+        public int StateId { get; set; }
         public State State { get; set; }
 
 
-       
+
         public ICollection<Booking> Bookings { get; set; }
         public List<FeedBack> Feedbacks { get; set; }
     }

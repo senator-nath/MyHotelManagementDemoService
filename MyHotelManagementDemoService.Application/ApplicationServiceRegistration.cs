@@ -15,7 +15,7 @@ namespace MyHotelManagementDemoService.Application
     {
         public static IServiceCollection RegisterApplicationService(this IServiceCollection services, IConfiguration config)
         {
-            //services.AddScoped<IUserService, UserService>();
+
             services.AddTransient<IUserService, UserService>();
             services.AddAuthentication(options =>
             {
