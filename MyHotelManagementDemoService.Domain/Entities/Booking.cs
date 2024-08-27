@@ -14,7 +14,7 @@ namespace MyHotelManagementDemoService.Domain.Entities
         public DateTime CheckOutDate { get; set; }
         public int NumberOfGuests { get; set; }
         public string Status { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public User User { get; set; }
         public int RoomId { get; set; }
         public Room Room { get; set; }
