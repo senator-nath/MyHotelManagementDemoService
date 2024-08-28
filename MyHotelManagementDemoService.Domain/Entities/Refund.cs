@@ -12,10 +12,5 @@ namespace MyHotelManagementDemoService.Domain.Entities
         public string ReferenceDetails { get; set; }
         public decimal Amount { get; set; }
         public DateTime DateIssued { get; set; }
-
-
-
-
-
     }
 }

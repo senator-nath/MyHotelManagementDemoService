@@ -21,5 +21,6 @@ namespace MyHotelManagementDemoService.Domain.Entities
         public RoomAmenities RoomAmenities { get; set; }
 
         public ICollection<Booking> Bookings { get; set; }
+        public List<string> Url { get; set; }
     }
 }

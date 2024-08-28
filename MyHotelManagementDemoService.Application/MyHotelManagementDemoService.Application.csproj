@@ -13,8 +13,6 @@
 	<ItemGroup>
 		<Folder Include="Dtos\Response\" />
 		<Folder Include="Services\Features\AmenityFeatures\Queries\" />
-		<Folder Include="Services\Features\FeedBackFeatures\Queries\" />
-		<Folder Include="Services\Features\RefundFeatures\Queries\" />
 		<Folder Include="Services\Features\RoomFeatures\Queries\" />
 	</ItemGroup>
 

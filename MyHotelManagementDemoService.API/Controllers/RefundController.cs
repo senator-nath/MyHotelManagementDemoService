@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyHotelManagementDemoService.Application.Services.Features.RefundFeatures.Command;
+using MyHotelManagementDemoService.Application.Services.Features.RefundFeatures.Queries;
 using MyHotelManagementDemoService.Application.Services.Features.RoomFeatures.Command;
+using MyHotelManagementDemoService.Domain.Entities;
 using System.Threading.Tasks;
 
 namespace MyHotelManagementDemoService.API.Controllers
@@ -24,6 +26,13 @@ namespace MyHotelManagementDemoService.API.Controllers
         {
             var room = await _mediator.Send(new CreateRefund(requestDto));
             return StatusCode((int)room.statusCode, room.Success ? room.Data : room.Message);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllRefunds()
+        {
+            var result = await _mediator.Send(new GetRefunds());
+            return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
         }
     }
 }
