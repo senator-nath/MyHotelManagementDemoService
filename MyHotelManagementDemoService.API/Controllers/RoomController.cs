@@ -21,5 +21,15 @@ namespace MyHotelManagementDemoService.API.Controllers
             var room = await _mediator.Send(new CreateRoom(requestDto));
             return StatusCode((int)room.statusCode, room.Success ? room.Data : room.Message);
         }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRoom(int id, [FromBody] UpdateRoomRequestDto requestDto)
+        {
+            var result = await _mediator.Send(new UpdateRoom(id, requestDto));
+            return StatusCode((int)result.statusCode, result.Success ? result.Message : result.Message);
+        }
+
+
+
     }
 }
+
