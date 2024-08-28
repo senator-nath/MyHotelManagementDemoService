@@ -54,6 +54,8 @@ namespace MyHotelManagementDemoService.Application.Services.Features.Users
 
             var newUser = new User()
             {
+                FirstName = userDto.FirstName,
+                LastName = userDto.LastName,
                 Email = userDto.Email,
                 PhoneNumber = userDto.PhoneNumber,
                 UserName = userDto.UserName,

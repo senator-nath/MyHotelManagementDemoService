@@ -1,4 +1,5 @@
-﻿using MyHotelManagementDemoService.Application.Contracts.GenericRepository;
+﻿using Microsoft.EntityFrameworkCore;
+using MyHotelManagementDemoService.Application.Contracts.GenericRepository;
 using MyHotelManagementDemoService.Persistence.Data;
 using System;
 using System.Collections.Generic;
@@ -16,34 +17,38 @@ namespace MyHotelManagementDemoService.Persistence.Implementation.GenericReposit
         {
             _dbContext = dbContext;
         }
-        public Task AddAsync(T entity)
+        public async Task AddAsync(T entity)
         {
-            throw new NotImplementedException();
+            await _dbContext.Set<T>().AddAsync(entity);
         }
 
         public void Delete(T entity)
         {
-            throw new NotImplementedException();
+            _dbContext.Set<T>().Remove(entity);
         }
 
-        public Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _dbContext.Set<T>().ToListAsync();
         }
 
-        public Task<T> GetByColumnAsync(Expression<Func<T, bool>> predicate)
+        public async Task<T> GetByColumnAsync(Expression<Func<T, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Set<T>().FirstOrDefaultAsync(predicate);
         }
 
-        public Task<IEnumerable<T>> GetWhereAsync(Expression<Func<T, bool>> predicate)
+        public async Task<IEnumerable<T>> GetWhereAsync(Expression<Func<T, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Set<T>().Where(predicate).ToListAsync();
+        }
+        public async Task<T> GetByIdAsync(int id)
+        {
+            return await _dbContext.Set<T>().FindAsync(id);
         }
 
         public void Update(T entity)
         {
-            throw new NotImplementedException();
+            _dbContext.Set<T>().Update(entity);
         }
     }
 }
