@@ -14,13 +14,17 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
 {
     public class UpdateAmenity : IRequest<Result<UpdateAmenityResponseDto>>
     {
+        public int Id { get; }
         public UpdateAmenityRequestDto RequestDto { get; }
 
-        public UpdateAmenity(UpdateAmenityRequestDto requestDto)
+        public UpdateAmenity(int id, UpdateAmenityRequestDto requestDto)
         {
+            Id = id;
             RequestDto = requestDto;
         }
     }
+
+
     public class UpdateAmenityHandler : IRequestHandler<UpdateAmenity, Result<UpdateAmenityResponseDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -32,7 +36,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
 
         public async Task<Result<UpdateAmenityResponseDto>> Handle(UpdateAmenity request, CancellationToken cancellationToken)
         {
-            var amenityEntity = await _unitOfWork.amenityRepository.GetByIdAsync(request.RequestDto.Id);
+            var amenityEntity = await _unitOfWork.amenityRepository.GetByColumnAsync(a => a.Id == request.Id);
 
             if (amenityEntity == null)
             {
@@ -59,22 +63,24 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
 
             return Result<UpdateAmenityResponseDto>.SuccessResult(responseDto, HttpStatusCode.OK);
         }
+    }
 
-        public class UpdateAmenityResponseDto
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public string Description { get; set; }
-            public bool IsActive { get; set; }
-            public int RoomAmenitiesId { get; set; }
-        }
-        public class UpdateAmenityRequestDto
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public string Description { get; set; }
-            public bool IsActive { get; set; }
-            public int RoomAmenitiesId { get; set; }
-        }
+
+    public class UpdateAmenityResponseDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsActive { get; set; }
+        public int RoomAmenitiesId { get; set; }
+    }
+    public class UpdateAmenityRequestDto
+    {
+        //public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsActive { get; set; }
+        public int RoomAmenitiesId { get; set; }
     }
 }
+

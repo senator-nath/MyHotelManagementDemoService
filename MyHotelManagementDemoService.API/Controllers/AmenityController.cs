@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyHotelManagementDemoService.Application.Services.Features.AmenityFeatures.Command;
+using MyHotelManagementDemoService.Application.Services.Features.AmenityFeatures.Queries;
 using MyHotelManagementDemoService.Application.Services.Features.RoomFeatures.Command;
 using MyHotelManagementDemoService.Domain.Entities;
 using System.Threading.Tasks;
@@ -18,23 +19,23 @@ namespace MyHotelManagementDemoService.API.Controllers
         {
             _mediator = mediator;
         }
-        [HttpPost]
-        public async Task<IActionResult> CreateRoom([FromBody] CreateAmenityRequestDto requestDto)
+        [HttpPost("create-room")]
+        public async Task<IActionResult> CreateAmenity([FromBody] CreateAmenityRequestDto requestDto)
         {
             var room = await _mediator.Send(new CreateAmenity(requestDto));
             return StatusCode((int)room.statusCode, room.Success ? room.Data : room.Message);
         }
-        [HttpPut]
-        public async Task<IActionResult> UpdateAmenity([FromBody] UpdateAmenityRequestDto requestDto)
+        [HttpPut("Update-Amenity/{id}")]
+        public async Task<IActionResult> UpdateAmenity(int id, [FromBody] UpdateAmenityRequestDto requestDto)
         {
-            if (!Request.Headers.TryGetValue("AmenityId", out var amenityIdValue) || !int.TryParse(amenityIdValue, out var amenityId))
-            {
-                return BadRequest("AmenityId header is missing or invalid.");
-            }
+            var result = await _mediator.Send(new UpdateAmenity(id, requestDto));
+            return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
+        }
+        [HttpGet("Get-All-Amenities")]
+        public async Task<IActionResult> GetAllAmenities()
+        {
+            var result = await _mediator.Send(new GetAmenities());
 
-            requestDto.Id = amenityId; // Set the Id from the header
-
-            var result = await _mediator.Send(new UpdateAmenity(requestDto));
             return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
         }
     }

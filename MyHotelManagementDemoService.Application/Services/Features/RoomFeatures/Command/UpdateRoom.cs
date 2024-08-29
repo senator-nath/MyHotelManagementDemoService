@@ -33,7 +33,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
 
         public async Task<Result<UpdateRoomResponseDto>> Handle(UpdateRoom request, CancellationToken cancellationToken)
         {
-            var roomEntity = await _unitOfWork.roomRepository.GetByIdAsync(request.Id);
+            var roomEntity = await _unitOfWork.roomRepository.GetByColumnAsync(a => a.Id == request.Id);
 
             if (roomEntity == null)
             {
@@ -66,7 +66,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     }
     public class UpdateRoomRequestDto
     {
-        public int Id { get; set; }
+        // public int Id { get; set; }
         public string RoomNumber { get; set; }
         public decimal Price { get; set; }
         public string Status { get; set; }

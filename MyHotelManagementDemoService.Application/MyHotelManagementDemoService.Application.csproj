@@ -12,8 +12,6 @@
 
 	<ItemGroup>
 		<Folder Include="Dtos\Response\" />
-		<Folder Include="Services\Features\AmenityFeatures\Queries\" />
-		<Folder Include="Services\Features\RoomFeatures\Queries\" />
 	</ItemGroup>
 
 	<ItemGroup>
