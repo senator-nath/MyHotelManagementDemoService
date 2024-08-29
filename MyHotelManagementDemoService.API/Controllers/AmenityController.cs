@@ -38,6 +38,12 @@ namespace MyHotelManagementDemoService.API.Controllers
 
             return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAmenity(int id)
+        {
+            var result = await _mediator.Send(new DeleteAmenity(id));
+            return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
+        }
     }
 }
 

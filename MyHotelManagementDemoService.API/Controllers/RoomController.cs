@@ -26,15 +26,20 @@ namespace MyHotelManagementDemoService.API.Controllers
         public async Task<IActionResult> UpdateRoom(int id, [FromBody] UpdateRoomRequestDto requestDto)
         {
             var result = await _mediator.Send(new UpdateRoom(id, requestDto));
-            return StatusCode((int)result.statusCode, result.Success ? result.Message : result.Message);
+            return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
         }
         [HttpGet("get-all-rooms")]
         public async Task<IActionResult> GetAllRooms()
         {
             var result = await _mediator.Send(new GetAllRooms());
-            return StatusCode((int)result.statusCode, result.Success ? result.Message : result.Message);
+            return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
         }
-
+        [HttpDelete("Delete-Room/{id}")]
+        public async Task<IActionResult> DeleteRoom(int id)
+        {
+            var result = await _mediator.Send(new DeleteRoom(id));
+            return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
+        }
     }
 }
 
