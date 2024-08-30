@@ -40,6 +40,19 @@ namespace MyHotelManagementDemoService.API.Controllers
             var result = await _mediator.Send(new DeleteRoom(id));
             return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
         }
+        [HttpGet("Get-Rooms-By-Room-Type/{roomTypeId}")]
+        public async Task<IActionResult> GetRoomsByRoomType(int roomTypeId)
+        {
+            var result = await _mediator.Send(new GetRoomsByRoomType(roomTypeId));
+
+            return Ok(result.Data);
+        }
+        [HttpPut("change-status")]
+        public async Task<IActionResult> ChangeRoomStatus([FromBody] ChangeRoomStatusRequestDto requestDto)
+        {
+            var result = await _mediator.Send(new ChangeRoomStatus(requestDto));
+            return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
+        }
     }
 }
 

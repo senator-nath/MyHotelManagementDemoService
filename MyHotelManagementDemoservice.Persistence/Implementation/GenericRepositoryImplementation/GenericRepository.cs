@@ -50,5 +50,6 @@ namespace MyHotelManagementDemoService.Persistence.Implementation.GenericReposit
         {
             _dbContext.Set<T>().Update(entity);
         }
+
     }
 }
