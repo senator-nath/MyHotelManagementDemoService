@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MyHotelManagementDemoService.Application.Dtos.Request;
 using MyHotelManagementDemoService.Application.Services.Features.AmenityFeatures.Command;
 using MyHotelManagementDemoService.Application.Services.Features.AmenityFeatures.Queries;
 using MyHotelManagementDemoService.Application.Services.Features.RoomFeatures.Command;
@@ -51,6 +52,16 @@ namespace MyHotelManagementDemoService.API.Controllers
             var result = await _mediator.Send(new GetAmenitiesByRoomAmenitiesId(roomAmenitiesId));
             return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
 
+        }
+
+        [HttpPut("activate-deactivate")]
+        public async Task<IActionResult> ActivateDeactivateAmenity([FromBody] ActivateDeactivateAmenityRequestDto requestDto)
+        {
+
+            var command = new ActivateDeactivateAmenity(requestDto.AmenityId, requestDto.IsActive);
+            var result = await _mediator.Send(command);
+
+            return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
         }
     }
 }

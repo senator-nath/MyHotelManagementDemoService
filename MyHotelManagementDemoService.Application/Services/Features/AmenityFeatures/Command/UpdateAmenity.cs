@@ -1,6 +1,8 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
+using MyHotelManagementDemoService.Application.Dtos.Request;
+using MyHotelManagementDemoService.Application.Dtos.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,21 +68,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
     }
 
 
-    public class UpdateAmenityResponseDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public bool IsActive { get; set; }
-        public int RoomAmenitiesId { get; set; }
-    }
-    public class UpdateAmenityRequestDto
-    {
-        //public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public bool IsActive { get; set; }
-        public int RoomAmenitiesId { get; set; }
-    }
+
+
 }
 

@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
+using MyHotelManagementDemoService.Application.Dtos.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,12 +61,6 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
             return Result<List<GetAmenitiesByRoomAmenitiesIdResponseDto>>.SuccessResult(amenityDtos, HttpStatusCode.OK);
         }
     }
-    public class GetAmenitiesByRoomAmenitiesIdResponseDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public bool IsActive { get; set; }
-    }
+
 }
 

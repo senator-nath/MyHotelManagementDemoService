@@ -1,6 +1,7 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
+using MyHotelManagementDemoService.Application.Dtos.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,13 +41,5 @@ namespace MyHotelManagementDemoService.Application.Services.Features.FeedBackFea
             return Result<List<GetFeedbacksResponseDto>>.SuccessResult(feedbackDtos, HttpStatusCode.OK);
         }
     }
-    public class GetFeedbacksResponseDto
-    {
-        public int Id { get; set; }
-        public string Comments { get; set; }
-        public int Rating { get; set; }
-        public DateTime DateSubmitted { get; set; }
-        public string UserId { get; set; }
-        public string UserName { get; set; }
-    }
+
 }
