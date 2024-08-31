@@ -53,6 +53,12 @@ namespace MyHotelManagementDemoService.API.Controllers
             var result = await _mediator.Send(new ChangeRoomStatus(requestDto));
             return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
         }
+        [HttpGet("available-rooms")]
+        public async Task<IActionResult> GetAvailableRooms()
+        {
+            var result = await _mediator.Send(new GetAvailableRooms());
+            return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
+        }
     }
 }
 

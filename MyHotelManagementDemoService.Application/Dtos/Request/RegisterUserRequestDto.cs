@@ -16,7 +16,7 @@ namespace MyHotelManagementDemoService.Application.Dtos.Request
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
         public string PhoneNumber { get; set; }
-
+        public int StateId { get; set; }
 
 
     }

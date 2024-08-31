@@ -64,7 +64,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     public class ChangeRoomStatusRequestDto
     {
         public int RoomId { get; set; }
-        public string NewStatus { get; set; } // "Available", "Occupied", "Under Maintenance"
+        public string NewStatus { get; set; }
     }
 
     public class ChangeRoomStatusResponseDto

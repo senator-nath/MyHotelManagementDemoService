@@ -130,7 +130,8 @@ namespace MyHotelManagementDemoService.Persistence.Migrations
                     Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime", nullable: false),
                     RoomTypeId = table.Column<int>(type: "int", nullable: false),
-                    RoomAmenitiesId = table.Column<int>(type: "int", nullable: false)
+                    RoomAmenitiesId = table.Column<int>(type: "int", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

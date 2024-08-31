@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using MyHotelManagementDemoService.Application.Contracts.GenericRepository;
 using MyHotelManagementDemoService.Persistence.Data;
 using System;
@@ -50,6 +51,23 @@ namespace MyHotelManagementDemoService.Persistence.Implementation.GenericReposit
         {
             _dbContext.Set<T>().Update(entity);
         }
+        public async Task<IEnumerable<T>> GetWhereAndIncludeAsync(
+    Expression<Func<T, bool>> filter,
+    Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            IQueryable<T> query = _dbContext.Set<T>();
 
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            return await query.ToListAsync();
+        }
     }
 }

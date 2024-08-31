@@ -44,6 +44,14 @@ namespace MyHotelManagementDemoService.API.Controllers
             var result = await _mediator.Send(new DeleteAmenity(id));
             return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
         }
+        [HttpGet("GetAmenityByRoomAmenities/{roomAmenitiesId}")]
+        public async Task<IActionResult> GetAmenitiesByRoomAmenitiesId(int roomAmenitiesId)
+        {
+
+            var result = await _mediator.Send(new GetAmenitiesByRoomAmenitiesId(roomAmenitiesId));
+            return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
+
+        }
     }
 }
 

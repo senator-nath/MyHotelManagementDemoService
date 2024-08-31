@@ -59,6 +59,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.Users
                 Email = userDto.Email,
                 PhoneNumber = userDto.PhoneNumber,
                 UserName = userDto.UserName,
+                StateId = userDto.StateId
             };
             var addUser = await _userManager.CreateAsync(newUser, userDto.Password);
             if (addUser.Succeeded)

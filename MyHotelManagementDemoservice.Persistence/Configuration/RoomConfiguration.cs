@@ -31,7 +31,10 @@ namespace HotelManagement.Persistence.Configuration
                 .IsRequired()
                 .HasColumnType("datetime");
 
-
+            builder.Property(r => r.Url)
+          .HasConversion(
+              v => string.Join(',', v),
+              v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
 
             builder.HasOne(r => r.RoomType)
                 .WithMany(rt => rt.Rooms)
