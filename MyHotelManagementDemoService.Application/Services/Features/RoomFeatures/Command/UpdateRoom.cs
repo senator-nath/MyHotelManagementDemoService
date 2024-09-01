@@ -1,6 +1,8 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
+using MyHotelManagementDemoService.Application.Dtos.Request;
+using MyHotelManagementDemoService.Application.Dtos.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,23 +66,6 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
             return Result<UpdateRoomResponseDto>.SuccessResult(responseDto, HttpStatusCode.OK);
         }
     }
-    public class UpdateRoomRequestDto
-    {
-        // public int Id { get; set; }
-        public string RoomNumber { get; set; }
-        public decimal Price { get; set; }
-        public string Status { get; set; }
-        public int RoomTypeId { get; set; }
-        public int RoomAmenitiesId { get; set; }
-    }
-    public class UpdateRoomResponseDto
-    {
-        public int Id { get; set; }
-        public string RoomNumber { get; set; }
-        public decimal Price { get; set; }
-        public string Status { get; set; }
-        public DateTime DateUpdated { get; set; }
-        public int RoomTypeId { get; set; }
-        public int RoomAmenitiesId { get; set; }
-    }
+
+
 }

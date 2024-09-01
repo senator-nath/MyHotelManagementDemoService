@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MyHotelManagementDemoService.Application.Dtos.Request;
 using MyHotelManagementDemoService.Application.Services.Features.FeedBackFeatures.Command;
 using MyHotelManagementDemoService.Application.Services.Features.FeedBackFeatures.Queries;
 using MyHotelManagementDemoService.Domain.Entities;

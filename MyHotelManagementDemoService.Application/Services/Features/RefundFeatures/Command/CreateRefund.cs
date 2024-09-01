@@ -1,6 +1,8 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
+using MyHotelManagementDemoService.Application.Dtos.Request;
+using MyHotelManagementDemoService.Application.Dtos.Response;
 using MyHotelManagementDemoService.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -53,16 +55,6 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RefundFeatu
             return Result<CreateRefundResponseDto>.SuccessResult(responseDto, HttpStatusCode.Created);
         }
     }
-    public class CreateRefundRequestDto
-    {
-        public string ReferenceDetails { get; set; }
-        public decimal Amount { get; set; }
-    }
-    public class CreateRefundResponseDto
-    {
-        public int Id { get; set; }
-        public string ReferenceDetails { get; set; }
-        public decimal Amount { get; set; }
-        public DateTime DateIssued { get; set; }
-    }
+
+
 }

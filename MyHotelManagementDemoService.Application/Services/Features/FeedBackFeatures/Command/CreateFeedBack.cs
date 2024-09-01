@@ -1,6 +1,8 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
+using MyHotelManagementDemoService.Application.Dtos.Request;
+using MyHotelManagementDemoService.Application.Dtos.Response;
 using MyHotelManagementDemoService.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -55,18 +57,6 @@ namespace MyHotelManagementDemoService.Application.Services.Features.FeedBackFea
             return Result<CreateFeedbackResponseDto>.SuccessResult(responseDto, HttpStatusCode.Created);
         }
     }
-    public class CreateFeedbackRequestDto
-    {
-        public string Comments { get; set; }
-        public int Rating { get; set; } // e.g., 1 to 5 stars
-        public string UserId { get; set; }
-    }
-    public class CreateFeedbackResponseDto
-    {
-        public int Id { get; set; }
-        public string Comments { get; set; }
-        public int Rating { get; set; }
-        public DateTime DateSubmitted { get; set; }
-        public string UserId { get; set; }
-    }
+
+
 }

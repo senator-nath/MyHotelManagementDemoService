@@ -1,6 +1,8 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
+using MyHotelManagementDemoService.Application.Dtos.Request;
+using MyHotelManagementDemoService.Application.Dtos.Response;
 using MyHotelManagementDemoService.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -58,22 +60,6 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
             return Result<CreateRoomResponseDto>.SuccessResult(responseDto, HttpStatusCode.OK);
         }
     }
-    public class CreateRoomResponseDto
-    {
-        public int RoomId { get; set; }
-        public string RoomNumber { get; set; }
-        public decimal Price { get; set; }
-        public string Status { get; set; }
-        public DateTime DateCreated { get; set; }
-        public int RoomTypeId { get; set; }
-        public int RoomAmenitiesId { get; set; }
-    }
-    public class CreateRoomRequestDto
-    {
-        public string RoomNumber { get; set; }
-        public decimal Price { get; set; }
-        public string Status { get; set; }
-        public int RoomTypeId { get; set; }
-        public int RoomAmenitiesId { get; set; }
-    }
+
+
 }
