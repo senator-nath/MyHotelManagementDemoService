@@ -58,6 +58,19 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
             return Result<CreateAmenityResponseDto>.SuccessResult(responseDto, HttpStatusCode.OK);
         }
     }
-
-
+    public class CreateAmenityResponseDto
+    {
+        public int AmenityId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsActive { get; set; }
+        public int RoomAmenitiesId { get; set; }
+    }
+    public class CreateAmenityRequestDto
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsActive { get; set; }
+        public int RoomAmenitiesId { get; set; }
+    }
 }

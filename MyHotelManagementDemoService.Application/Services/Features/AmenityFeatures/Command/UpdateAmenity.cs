@@ -67,7 +67,21 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
         }
     }
 
-
+    public class UpdateAmenityResponseDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsActive { get; set; }
+        public int RoomAmenitiesId { get; set; }
+    }
+    public class UpdateAmenityRequestDto
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsActive { get; set; }
+        public int RoomAmenitiesId { get; set; }
+    }
 
 
 }

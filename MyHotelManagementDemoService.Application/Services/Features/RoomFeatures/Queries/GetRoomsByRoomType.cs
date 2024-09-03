@@ -1,5 +1,6 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
 using MyHotelManagementDemoService.Application.Dtos.Response;
 using System;
@@ -21,6 +22,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
             RoomTypeId = roomTypeId;
         }
     }
+
     public class GetRoomsByRoomTypeHandler : IRequestHandler<GetRoomsByRoomType, Result<List<GetRoomsByRoomTypeResponseDto>>>
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -32,28 +34,29 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
 
         public async Task<Result<List<GetRoomsByRoomTypeResponseDto>>> Handle(GetRoomsByRoomType request, CancellationToken cancellationToken)
         {
-            // Fetch rooms that belong to the specified RoomTypeId
-            var rooms = await _unitOfWork.roomRepository.GetWhereAsync(r => r.RoomTypeId == request.RoomTypeId);
+            var rooms = await _unitOfWork.roomRepository.GetWhereAndIncludeAsync(
+                r => r.RoomTypeId == request.RoomTypeId,
+                include: r => r.Include(rt => rt.RoomType)
+            );
 
-            if (rooms == null || !rooms.Any())
+            var roomDtos = rooms.Select(r => new GetRoomsByRoomTypeResponseDto
             {
-                return Result<List<GetRoomsByRoomTypeResponseDto>>.ErrorResult("No rooms found for the specified RoomType.", HttpStatusCode.NotFound);
-            }
-
-            var roomDtos = rooms.Select(room => new GetRoomsByRoomTypeResponseDto
-            {
-                Id = room.Id,
-                RoomNumber = room.RoomNumber,
-                Price = room.Price,
-                Status = room.Status,
-                DateCreated = room.DateCreated,
-                RoomTypeId = room.RoomTypeId,
-                RoomTypeName = room.RoomType.TypeName, // Mapping RoomType name
-                Url = room.Url
+                Id = r.Id,
+                RoomNumber = r.RoomNumber,
+                Price = r.Price,
+                RoomTypeName = r.RoomType.TypeName
             }).ToList();
 
             return Result<List<GetRoomsByRoomTypeResponseDto>>.SuccessResult(roomDtos, HttpStatusCode.OK);
         }
+    }
+
+    public class GetRoomsByRoomTypeResponseDto
+    {
+        public int Id { get; set; }
+        public string RoomNumber { get; set; }
+        public decimal Price { get; set; }
+        public string RoomTypeName { get; set; }
     }
 }
 

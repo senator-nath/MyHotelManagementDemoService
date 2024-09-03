@@ -59,7 +59,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                 Price = roomEntity.Price,
                 Status = roomEntity.Status,
                 DateUpdated = roomEntity.DateCreated, // Assuming you want the DateCreated as DateUpdated
-                RoomTypeId = roomEntity.RoomTypeId,
+                                                      // RoomTypeId = roomEntity.RoomTypeId,
                 RoomAmenitiesId = roomEntity.RoomAmenitiesId
             };
 

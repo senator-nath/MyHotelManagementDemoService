@@ -10,7 +10,7 @@ using MyHotelManagementDemoService.Persistence.Data;
 namespace MyHotelManagementDemoService.Persistence.Migrations
 {
     [DbContext(typeof(HotelManagementDbContext))]
-    [Migration("20240831171253_Initial-Migration")]
+    [Migration("20240903162243_Initial-Migration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -353,6 +353,9 @@ namespace MyHotelManagementDemoService.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

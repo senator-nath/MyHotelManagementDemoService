@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using MyHotelManagementDemoService.Application.Services.Features.BookingFeatures;
 using MyHotelManagementDemoService.Application.Services.Features.Users;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ namespace MyHotelManagementDemoService.Application
 
             services.AddTransient<IUserService, UserService>();
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+            services.AddHostedService<BookingReminderWorker>();
+            services.AddHttpClient();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

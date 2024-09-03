@@ -36,33 +36,37 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
 
         public async Task<Result<ActivateDeactivateAmenityRequestDto>> Handle(ActivateDeactivateAmenity request, CancellationToken cancellationToken)
         {
-            // Retrieve the amenity by Id
+
             var amenity = await _unitOfWork.amenityRepository.GetByIdAsync(request.AmenityId);
 
             if (amenity == null)
             {
-                // Amenity with the specified Id does not exist
+
                 return Result<ActivateDeactivateAmenityRequestDto>.ErrorResult("Amenity not found.", HttpStatusCode.NotFound);
             }
 
-            // Update the IsActive status
+
             amenity.IsActive = request.IsActive;
 
-            // Update the amenity in the repository
+
             _unitOfWork.amenityRepository.Update(amenity);
             await _unitOfWork.Save();
 
-            // Prepare the response DTO
+
             var responseDto = new ActivateDeactivateAmenityRequestDto
             {
-                AmenityId = amenity.Id, // Include the AmenityId in the response DTO
+                AmenityId = amenity.Id,
                 IsActive = amenity.IsActive
             };
 
-            // Return success result with response DTO
+
             return Result<ActivateDeactivateAmenityRequestDto>.SuccessResult(responseDto, HttpStatusCode.OK);
         }
     }
-
+    public class ActivateDeactivateAmenityRequestDto
+    {
+        public int AmenityId { get; set; }
+        public bool IsActive { get; set; }
+    }
 }
 
