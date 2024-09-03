@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using BlogApp.Application.Helpers;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyHotelManagementDemoService.Application.Dtos.Request;
@@ -59,6 +60,13 @@ namespace MyHotelManagementDemoService.API.Controllers
         {
             var result = await _mediator.Send(new GetAvailableRooms());
             return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
+        }
+        [HttpGet("Get-Room-By-Id/{id}")]
+        public async Task<ActionResult<Result<GetRoomByIdResponseDto>>> GetRoomById(int id)
+        {
+            var request = new GetRoomById(id);
+            var result = await _mediator.Send(request);
+            return Ok(result);
         }
     }
 }

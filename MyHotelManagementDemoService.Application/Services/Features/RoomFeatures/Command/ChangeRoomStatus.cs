@@ -1,5 +1,6 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
 using MyHotelManagementDemoService.Application.Dtos.Request;
 using MyHotelManagementDemoService.Application.Dtos.Response;
@@ -25,45 +26,71 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     public class ChangeRoomStatusHandler : IRequestHandler<ChangeRoomStatus, Result<ChangeRoomStatusResponseDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger _logger;
 
-        public ChangeRoomStatusHandler(IUnitOfWork unitOfWork)
+        public ChangeRoomStatusHandler(IUnitOfWork unitOfWork, ILogger logger)
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task<Result<ChangeRoomStatusResponseDto>> Handle(ChangeRoomStatus request, CancellationToken cancellationToken)
         {
-            // Fetch the room entity by its ID
-            var roomEntity = await _unitOfWork.roomRepository.GetByIdAsync(request.RequestDto.RoomId);
-
-            if (roomEntity == null)
+            try
             {
-                return Result<ChangeRoomStatusResponseDto>.ErrorResult("Room not found.", HttpStatusCode.NotFound);
+
+                if (request.RequestDto.RoomId <= 0)
+                {
+                    _logger.LogWarning("Invalid room ID: {RoomId}", request.RequestDto.RoomId);
+                    return Result<ChangeRoomStatusResponseDto>.ErrorResult("Invalid room ID", HttpStatusCode.BadRequest);
+                }
+
+                var roomEntity = await _unitOfWork.roomRepository.GetByIdAsync(request.RequestDto.RoomId);
+
+                if (roomEntity == null)
+                {
+                    _logger.LogWarning("Room not found: {RoomId}", request.RequestDto.RoomId);
+                    return Result<ChangeRoomStatusResponseDto>.ErrorResult("Room not found", HttpStatusCode.NotFound);
+                }
+
+                var oldStatus = roomEntity.Status;
+
+                roomEntity.Status = request.RequestDto.NewStatus;
+
+                _unitOfWork.roomRepository.Update(roomEntity);
+                await _unitOfWork.Save();
+
+                var responseDto = new ChangeRoomStatusResponseDto
+                {
+                    RoomId = roomEntity.Id,
+                    RoomNumber = roomEntity.RoomNumber,
+                    OldStatus = oldStatus,
+                    NewStatus = roomEntity.Status
+                };
+
+                _logger.LogInformation("Room status changed: {RoomId} - {OldStatus} -> {NewStatus}", roomEntity.Id, oldStatus, roomEntity.Status);
+
+                return Result<ChangeRoomStatusResponseDto>.SuccessResult(responseDto, HttpStatusCode.OK);
             }
-
-            // Store the old status for the response
-            var oldStatus = roomEntity.Status;
-
-            // Update the room's status
-            roomEntity.Status = request.RequestDto.NewStatus;
-
-            // Update the room entity in the repository
-            _unitOfWork.roomRepository.Update(roomEntity);
-            await _unitOfWork.Save();
-
-            // Prepare the response DTO
-            var responseDto = new ChangeRoomStatusResponseDto
+            catch (Exception ex)
             {
-                RoomId = roomEntity.Id,
-                RoomNumber = roomEntity.RoomNumber,
-                OldStatus = oldStatus,
-                NewStatus = roomEntity.Status
-            };
-
-            return Result<ChangeRoomStatusResponseDto>.SuccessResult(responseDto, HttpStatusCode.OK);
+                _logger.LogError(ex, "Error changing room status: {RoomId}", request.RequestDto.RoomId);
+                return Result<ChangeRoomStatusResponseDto>.ErrorResult("Error changing room status", HttpStatusCode.InternalServerError);
+            }
+        }
+        public class ChangeRoomStatusResponseDto
+        {
+            public int RoomId { get; set; }
+            public string RoomNumber { get; set; }
+            public string OldStatus { get; set; }
+            public string NewStatus { get; set; }
+        }
+        public class ChangeRoomStatusRequestDto
+        {
+            public int RoomId { get; set; }
+            public string NewStatus { get; set; }
         }
     }
-
 
 
 }

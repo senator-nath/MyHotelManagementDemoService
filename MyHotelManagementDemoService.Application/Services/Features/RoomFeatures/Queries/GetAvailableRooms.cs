@@ -1,6 +1,7 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
 using MyHotelManagementDemoService.Application.Dtos.Response;
 using MyHotelManagementDemoService.Domain.Entities;
@@ -21,28 +22,46 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     public class GetAvailableRoomsHandler : IRequestHandler<GetAvailableRooms, Result<List<GetAvailableRoomsResponseDto>>>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger _logger;
 
-        public GetAvailableRoomsHandler(IUnitOfWork unitOfWork)
+        public GetAvailableRoomsHandler(IUnitOfWork unitOfWork, ILogger logger)
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task<Result<List<GetAvailableRoomsResponseDto>>> Handle(GetAvailableRooms request, CancellationToken cancellationToken)
         {
-            var rooms = await _unitOfWork.roomRepository.GetWhereAndIncludeAsync(
-                r => r.Status == "Available",
-                include: r => r.Include(rt => rt.RoomType)
-            );
-
-            var roomDtos = rooms.Select(r => new GetAvailableRoomsResponseDto
+            try
             {
-                Id = r.Id,
-                RoomNumber = r.RoomNumber,
-                Price = r.Price,
-                RoomTypeName = r.RoomType.TypeName
-            }).ToList();
+                var rooms = await _unitOfWork.roomRepository.GetWhereAndIncludeAsync(
+                    r => r.Status == "Available",
+                    include: r => r.Include(rt => rt.RoomType)
+                );
 
-            return Result<List<GetAvailableRoomsResponseDto>>.SuccessResult(roomDtos, HttpStatusCode.OK);
+                if (rooms == null || !rooms.Any())
+                {
+                    _logger.LogWarning("No available rooms found");
+                    return Result<List<GetAvailableRoomsResponseDto>>.ErrorResult("No available rooms found", HttpStatusCode.NotFound);
+                }
+
+                var roomDtos = rooms.Select(r => new GetAvailableRoomsResponseDto
+                {
+                    Id = r.Id,
+                    RoomNumber = r.RoomNumber,
+                    Price = r.Price,
+                    RoomTypeName = r.RoomType?.TypeName // Null-conditional operator to avoid null reference exception
+                }).ToList();
+
+                _logger.LogInformation("Available rooms retrieved successfully");
+
+                return Result<List<GetAvailableRoomsResponseDto>>.SuccessResult(roomDtos, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving available rooms");
+                return Result<List<GetAvailableRoomsResponseDto>>.ErrorResult("Error retrieving available rooms", HttpStatusCode.InternalServerError);
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
 using MyHotelManagementDemoService.Application.Dtos.Request;
 using MyHotelManagementDemoService.Application.Dtos.Response;
@@ -27,45 +28,74 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     public class UpdateRoomHandler : IRequestHandler<UpdateRoom, Result<UpdateRoomResponseDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger _logger;
 
-        public UpdateRoomHandler(IUnitOfWork unitOfWork)
+        public UpdateRoomHandler(IUnitOfWork unitOfWork, ILogger logger)
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task<Result<UpdateRoomResponseDto>> Handle(UpdateRoom request, CancellationToken cancellationToken)
         {
-            var roomEntity = await _unitOfWork.roomRepository.GetByColumnAsync(a => a.Id == request.Id);
-
-            if (roomEntity == null)
+            try
             {
-                return Result<UpdateRoomResponseDto>.ErrorResult("Room not found", HttpStatusCode.NotFound);
+                var roomEntity = await _unitOfWork.roomRepository.GetByColumnAsync(a => a.Id == request.Id);
+
+                if (roomEntity == null)
+                {
+                    _logger.LogWarning("Room not found: {Id}", request.Id);
+                    return Result<UpdateRoomResponseDto>.ErrorResult("Room not found", HttpStatusCode.NotFound);
+                }
+
+                roomEntity.RoomNumber = request.RequestDto.RoomNumber;
+                roomEntity.Price = request.RequestDto.Price;
+                roomEntity.Status = request.RequestDto.Status;
+                roomEntity.RoomTypeId = request.RequestDto.RoomTypeId;
+                roomEntity.RoomAmenitiesId = request.RequestDto.RoomAmenitiesId;
+
+                _unitOfWork.roomRepository.Update(roomEntity);
+                await _unitOfWork.Save();
+
+                _logger.LogInformation("Room updated: {Id}", request.Id);
+
+                var responseDto = new UpdateRoomResponseDto
+                {
+                    Id = roomEntity.Id,
+                    RoomNumber = roomEntity.RoomNumber,
+                    Price = roomEntity.Price,
+                    Status = roomEntity.Status,
+                    DateUpdated = DateTime.UtcNow,
+                    RoomTypeId = roomEntity.RoomTypeId,
+                    RoomAmenitiesId = roomEntity.RoomAmenitiesId
+                };
+
+                return Result<UpdateRoomResponseDto>.SuccessResult(responseDto, HttpStatusCode.OK);
             }
-
-            // Update room entity with the new details from RequestDto
-            roomEntity.RoomNumber = request.RequestDto.RoomNumber;
-            roomEntity.Price = request.RequestDto.Price;
-            roomEntity.Status = request.RequestDto.Status;
-            roomEntity.RoomTypeId = request.RequestDto.RoomTypeId;
-            roomEntity.RoomAmenitiesId = request.RequestDto.RoomAmenitiesId;
-
-            _unitOfWork.roomRepository.Update(roomEntity);
-            await _unitOfWork.Save();
-
-            var responseDto = new UpdateRoomResponseDto
+            catch (Exception ex)
             {
-                Id = roomEntity.Id,
-                RoomNumber = roomEntity.RoomNumber,
-                Price = roomEntity.Price,
-                Status = roomEntity.Status,
-                DateUpdated = roomEntity.DateCreated, // Assuming you want the DateCreated as DateUpdated
-                                                      // RoomTypeId = roomEntity.RoomTypeId,
-                RoomAmenitiesId = roomEntity.RoomAmenitiesId
-            };
-
-            return Result<UpdateRoomResponseDto>.SuccessResult(responseDto, HttpStatusCode.OK);
+                _logger.LogError(ex, "Error updating room: {Id}", request.Id);
+                return Result<UpdateRoomResponseDto>.ErrorResult("Error updating room", HttpStatusCode.InternalServerError);
+            }
         }
+
     }
-
-
+    public class UpdateRoomResponseDto
+    {
+        public int Id { get; set; }
+        public string RoomNumber { get; set; }
+        public decimal Price { get; set; }
+        public string Status { get; set; }
+        public DateTime DateUpdated { get; set; }
+        public int RoomTypeId { get; set; }
+        public int RoomAmenitiesId { get; set; }
+    }
+    public class UpdateRoomRequestDto
+    {
+        public string RoomNumber { get; set; }
+        public decimal Price { get; set; }
+        public string Status { get; set; }
+        public int RoomTypeId { get; set; }
+        public int RoomAmenitiesId { get; set; }
+    }
 }
