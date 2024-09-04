@@ -19,9 +19,9 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     public class GetAllRoomsHandler : IRequestHandler<GetAllRooms, Result<List<GetRoomsResponseDto>>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger _logger;
+        private readonly ILogger<GetAllRoomsHandler> _logger;
 
-        public GetAllRoomsHandler(IUnitOfWork unitOfWork, ILogger logger)
+        public GetAllRoomsHandler(IUnitOfWork unitOfWork, ILogger<GetAllRoomsHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;

@@ -27,9 +27,9 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     public class CreateRoomHandler : IRequestHandler<CreateRoom, Result<CreateRoomResponseDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger _logger;
+        private readonly ILogger<CreateRoomHandler> _logger;
 
-        public CreateRoomHandler(IUnitOfWork unitOfWork, ILogger logger)
+        public CreateRoomHandler(IUnitOfWork unitOfWork, ILogger<CreateRoomHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;

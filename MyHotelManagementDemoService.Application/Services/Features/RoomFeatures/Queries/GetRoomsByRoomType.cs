@@ -1,6 +1,7 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
 using MyHotelManagementDemoService.Application.Dtos.Response;
 using System;
@@ -26,28 +27,53 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     public class GetRoomsByRoomTypeHandler : IRequestHandler<GetRoomsByRoomType, Result<List<GetRoomsByRoomTypeResponseDto>>>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<GetRoomsByRoomTypeHandler> _logger;
 
-        public GetRoomsByRoomTypeHandler(IUnitOfWork unitOfWork)
+        public GetRoomsByRoomTypeHandler(IUnitOfWork unitOfWork, ILogger<GetRoomsByRoomTypeHandler> logger)
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task<Result<List<GetRoomsByRoomTypeResponseDto>>> Handle(GetRoomsByRoomType request, CancellationToken cancellationToken)
         {
-            var rooms = await _unitOfWork.roomRepository.GetWhereAndIncludeAsync(
-                r => r.RoomTypeId == request.RoomTypeId,
-                include: r => r.Include(rt => rt.RoomType)
-            );
-
-            var roomDtos = rooms.Select(r => new GetRoomsByRoomTypeResponseDto
+            try
             {
-                Id = r.Id,
-                RoomNumber = r.RoomNumber,
-                Price = r.Price,
-                RoomTypeName = r.RoomType.TypeName
-            }).ToList();
 
-            return Result<List<GetRoomsByRoomTypeResponseDto>>.SuccessResult(roomDtos, HttpStatusCode.OK);
+                if (request.RoomTypeId <= 0)
+                {
+                    _logger.LogWarning("Invalid room type ID: {RoomTypeId}", request.RoomTypeId);
+                    return Result<List<GetRoomsByRoomTypeResponseDto>>.ErrorResult("Invalid room type ID", HttpStatusCode.BadRequest);
+                }
+
+                var rooms = await _unitOfWork.roomRepository.GetWhereAndIncludeAsync(
+                    r => r.RoomTypeId == request.RoomTypeId,
+                    include: r => r.Include(rt => rt.RoomType)
+                );
+
+                if (rooms == null || !rooms.Any())
+                {
+                    _logger.LogWarning("No rooms found for room type ID: {RoomTypeId}", request.RoomTypeId);
+                    return Result<List<GetRoomsByRoomTypeResponseDto>>.ErrorResult("No rooms found", HttpStatusCode.NotFound);
+                }
+
+                var roomDtos = rooms.Select(r => new GetRoomsByRoomTypeResponseDto
+                {
+                    Id = r.Id,
+                    RoomNumber = r.RoomNumber,
+                    Price = r.Price,
+                    RoomTypeName = r.RoomType?.TypeName // Null-conditional operator to avoid null reference exception
+                }).ToList();
+
+                _logger.LogInformation("Rooms retrieved successfully for room type ID: {RoomTypeId}", request.RoomTypeId);
+
+                return Result<List<GetRoomsByRoomTypeResponseDto>>.SuccessResult(roomDtos, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving rooms for room type ID: {RoomTypeId}", request.RoomTypeId);
+                return Result<List<GetRoomsByRoomTypeResponseDto>>.ErrorResult("Error retrieving rooms", HttpStatusCode.InternalServerError);
+            }
         }
     }
 

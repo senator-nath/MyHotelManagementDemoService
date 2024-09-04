@@ -24,9 +24,9 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     public class DeleteRoomHandler : IRequestHandler<DeleteRoom, Result<Unit>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger _logger;
+        private readonly ILogger<DeleteRoomHandler> _logger;
 
-        public DeleteRoomHandler(IUnitOfWork unitOfWork, ILogger logger)
+        public DeleteRoomHandler(IUnitOfWork unitOfWork, ILogger<DeleteRoomHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;

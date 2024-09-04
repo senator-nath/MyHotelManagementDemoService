@@ -22,9 +22,9 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     public class GetAvailableRoomsHandler : IRequestHandler<GetAvailableRooms, Result<List<GetAvailableRoomsResponseDto>>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger _logger;
+        private readonly ILogger<GetAvailableRoomsHandler> _logger;
 
-        public GetAvailableRoomsHandler(IUnitOfWork unitOfWork, ILogger logger)
+        public GetAvailableRoomsHandler(IUnitOfWork unitOfWork, ILogger<GetAvailableRoomsHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;

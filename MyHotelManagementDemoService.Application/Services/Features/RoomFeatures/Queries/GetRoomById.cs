@@ -1,5 +1,6 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
 using System;
 using System.Collections.Generic;
@@ -23,34 +24,54 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     public class GetRoomByIdHandler : IRequestHandler<GetRoomById, Result<GetRoomByIdResponseDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<GetRoomByIdHandler> _logger;
 
-        public GetRoomByIdHandler(IUnitOfWork unitOfWork)
+        public GetRoomByIdHandler(IUnitOfWork unitOfWork, ILogger<GetRoomByIdHandler> logger)
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task<Result<GetRoomByIdResponseDto>> Handle(GetRoomById request, CancellationToken cancellationToken)
         {
-            var room = await _unitOfWork.roomRepository.GetByIdAsync(request.Id);
-
-            if (room == null)
+            try
             {
-                return Result<GetRoomByIdResponseDto>.ErrorResult("Room not found", HttpStatusCode.NotFound); ;
+
+                if (request.Id <= 0)
+                {
+                    _logger.LogWarning("Invalid room ID: {Id}", request.Id);
+                    return Result<GetRoomByIdResponseDto>.ErrorResult("Invalid room ID", HttpStatusCode.BadRequest);
+                }
+
+                var room = await _unitOfWork.roomRepository.GetByIdAsync(request.Id);
+
+                if (room == null)
+                {
+                    _logger.LogWarning("Room not found: {Id}", request.Id);
+                    return Result<GetRoomByIdResponseDto>.ErrorResult("Room not found", HttpStatusCode.NotFound);
+                }
+
+                var roomDto = new GetRoomByIdResponseDto
+                {
+                    Id = room.Id,
+                    RoomNumber = room.RoomNumber,
+                    Price = room.Price,
+                    Status = room.Status,
+                    DateCreated = room.DateCreated,
+                    RoomTypeId = room.RoomTypeId,
+                    RoomAmenitiesId = room.RoomAmenitiesId,
+                    Urls = room.Url
+                };
+
+                _logger.LogInformation("Room retrieved successfully: {Id}", request.Id);
+
+                return Result<GetRoomByIdResponseDto>.SuccessResult(roomDto, HttpStatusCode.OK);
             }
-
-            var roomDto = new GetRoomByIdResponseDto
+            catch (Exception ex)
             {
-                Id = room.Id,
-                RoomNumber = room.RoomNumber,
-                Price = room.Price,
-                Status = room.Status,
-                DateCreated = room.DateCreated,
-                RoomTypeId = room.RoomTypeId,
-                RoomAmenitiesId = room.RoomAmenitiesId,
-                Urls = room.Url
-            };
-
-            return Result<GetRoomByIdResponseDto>.SuccessResult(roomDto, HttpStatusCode.OK);
+                _logger.LogError(ex, "Error retrieving room: {Id}", request.Id);
+                return Result<GetRoomByIdResponseDto>.ErrorResult("Error retrieving room", HttpStatusCode.InternalServerError);
+            }
         }
     }
     public class GetRoomByIdResponseDto

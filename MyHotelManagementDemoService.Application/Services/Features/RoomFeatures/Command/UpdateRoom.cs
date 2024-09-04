@@ -28,9 +28,9 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     public class UpdateRoomHandler : IRequestHandler<UpdateRoom, Result<UpdateRoomResponseDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger _logger;
+        private readonly ILogger<UpdateRoomHandler> _logger;
 
-        public UpdateRoomHandler(IUnitOfWork unitOfWork, ILogger logger)
+        public UpdateRoomHandler(IUnitOfWork unitOfWork, ILogger<UpdateRoomHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;

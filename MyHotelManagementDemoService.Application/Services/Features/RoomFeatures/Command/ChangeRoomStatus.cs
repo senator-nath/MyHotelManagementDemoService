@@ -26,9 +26,9 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     public class ChangeRoomStatusHandler : IRequestHandler<ChangeRoomStatus, Result<ChangeRoomStatusResponseDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger _logger;
+        private readonly ILogger<ChangeRoomStatusHandler> _logger;
 
-        public ChangeRoomStatusHandler(IUnitOfWork unitOfWork, ILogger logger)
+        public ChangeRoomStatusHandler(IUnitOfWork unitOfWork, ILogger<ChangeRoomStatusHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
@@ -78,19 +78,19 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                 return Result<ChangeRoomStatusResponseDto>.ErrorResult("Error changing room status", HttpStatusCode.InternalServerError);
             }
         }
-        public class ChangeRoomStatusResponseDto
-        {
-            public int RoomId { get; set; }
-            public string RoomNumber { get; set; }
-            public string OldStatus { get; set; }
-            public string NewStatus { get; set; }
-        }
-        public class ChangeRoomStatusRequestDto
-        {
-            public int RoomId { get; set; }
-            public string NewStatus { get; set; }
-        }
+
     }
 
-
+    public class ChangeRoomStatusResponseDto
+    {
+        public int RoomId { get; set; }
+        public string RoomNumber { get; set; }
+        public string OldStatus { get; set; }
+        public string NewStatus { get; set; }
+    }
+    public class ChangeRoomStatusRequestDto
+    {
+        public int RoomId { get; set; }
+        public string NewStatus { get; set; }
+    }
 }
