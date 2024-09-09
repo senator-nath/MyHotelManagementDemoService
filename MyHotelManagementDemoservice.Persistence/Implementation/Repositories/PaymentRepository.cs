@@ -6,7 +6,7 @@ using MyHotelManagementDemoService.Persistence.Implementation.GenericRepositoryI
 
 namespace HotelManagement.Persistence.RepositoryImplementation.Repository
 {
-    public class PaymentRepository : GenericRepository<User>, IUserRepository
+    public class PaymentRepository : GenericRepository<Payment>, IPaymentRepository
     {
         public PaymentRepository(HotelManagementDbContext _context) : base(_context)
         {

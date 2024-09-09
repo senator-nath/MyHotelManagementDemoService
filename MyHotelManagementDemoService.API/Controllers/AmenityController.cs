@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using BlogApp.Application.Helpers;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyHotelManagementDemoService.Application.Dtos.Request;
@@ -62,6 +63,13 @@ namespace MyHotelManagementDemoService.API.Controllers
             var result = await _mediator.Send(command);
 
             return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
+        }
+        [HttpPost("assign-amenity")]
+        public async Task<ActionResult<Result<Unit>>> AssignAmenityToRoom(int RoomAmenitiesId, int AmenityId)
+        {
+            var command = new AssignAmenityToRoomCommand(RoomAmenitiesId, AmenityId);
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
     }
 }

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using MyHotelManagementDemoService.Application.Services.Features.BookingFeatures;
+using MyHotelManagementDemoService.Application.Services.Features.BookingFeatures.Queries;
 using MyHotelManagementDemoService.Application.Services.Features.Users;
 using System;
 using System.Collections.Generic;

@@ -42,7 +42,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                 if (rooms == null || !rooms.Any())
                 {
                     _logger.LogWarning("No available rooms found");
-                    return Result<List<GetAvailableRoomsResponseDto>>.ErrorResult("No available rooms found", HttpStatusCode.NotFound);
+                    return Result<List<GetAvailableRoomsResponseDto>>.NotFound("No available rooms found");
                 }
 
                 var roomDtos = rooms.Select(r => new GetAvailableRoomsResponseDto
@@ -55,12 +55,12 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
 
                 _logger.LogInformation("Available rooms retrieved successfully");
 
-                return Result<List<GetAvailableRoomsResponseDto>>.SuccessResult(roomDtos, HttpStatusCode.OK);
+                return Result<List<GetAvailableRoomsResponseDto>>.SuccessResult(roomDtos);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving available rooms");
-                return Result<List<GetAvailableRoomsResponseDto>>.ErrorResult("Error retrieving available rooms", HttpStatusCode.InternalServerError);
+                return Result<List<GetAvailableRoomsResponseDto>>.InternalServerError();
             }
         }
     }

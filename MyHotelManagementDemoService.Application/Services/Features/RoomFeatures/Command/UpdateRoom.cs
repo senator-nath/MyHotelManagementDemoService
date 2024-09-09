@@ -45,7 +45,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                 if (roomEntity == null)
                 {
                     _logger.LogWarning("Room not found: {Id}", request.Id);
-                    return Result<UpdateRoomResponseDto>.ErrorResult("Room not found", HttpStatusCode.NotFound);
+                    return Result<UpdateRoomResponseDto>.NotFound("Room not found");
                 }
 
                 roomEntity.RoomNumber = request.RequestDto.RoomNumber;
@@ -70,12 +70,12 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                     RoomAmenitiesId = roomEntity.RoomAmenitiesId
                 };
 
-                return Result<UpdateRoomResponseDto>.SuccessResult(responseDto, HttpStatusCode.OK);
+                return Result<UpdateRoomResponseDto>.SuccessResult(responseDto);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating room: {Id}", request.Id);
-                return Result<UpdateRoomResponseDto>.ErrorResult("Error updating room", HttpStatusCode.InternalServerError);
+                return Result<UpdateRoomResponseDto>.InternalServerError();
             }
         }
 

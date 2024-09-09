@@ -37,7 +37,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
                  RoomAmenitiesId = amenity.RoomAmenitiesId
             }).ToList();
 
-            return Result<List<GetAmenitiesResponseDto>>.SuccessResult(amenityDtos, HttpStatusCode.OK);
+            return Result<List<GetAmenitiesResponseDto>>.SuccessResult(amenityDtos);
         }
     }
 

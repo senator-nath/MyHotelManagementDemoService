@@ -40,7 +40,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                 if (request.Id <= 0)
                 {
                     _logger.LogWarning("Invalid room ID: {Id}", request.Id);
-                    return Result<GetRoomByIdResponseDto>.ErrorResult("Invalid room ID", HttpStatusCode.BadRequest);
+                    return Result<GetRoomByIdResponseDto>.BadRequest();
                 }
 
                 var room = await _unitOfWork.roomRepository.GetByIdAsync(request.Id);
@@ -48,7 +48,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                 if (room == null)
                 {
                     _logger.LogWarning("Room not found: {Id}", request.Id);
-                    return Result<GetRoomByIdResponseDto>.ErrorResult("Room not found", HttpStatusCode.NotFound);
+                    return Result<GetRoomByIdResponseDto>.NotFound("Room not found");
                 }
 
                 var roomDto = new GetRoomByIdResponseDto
@@ -65,12 +65,12 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
 
                 _logger.LogInformation("Room retrieved successfully: {Id}", request.Id);
 
-                return Result<GetRoomByIdResponseDto>.SuccessResult(roomDto, HttpStatusCode.OK);
+                return Result<GetRoomByIdResponseDto>.SuccessResult(roomDto);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving room: {Id}", request.Id);
-                return Result<GetRoomByIdResponseDto>.ErrorResult("Error retrieving room", HttpStatusCode.InternalServerError);
+                return Result<GetRoomByIdResponseDto>.InternalServerError();
             }
         }
     }

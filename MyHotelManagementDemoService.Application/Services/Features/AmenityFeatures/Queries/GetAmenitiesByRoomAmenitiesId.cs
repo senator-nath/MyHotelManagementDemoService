@@ -46,7 +46,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
             var roomAmenitiesEntity = roomAmenities.FirstOrDefault();
             if (roomAmenitiesEntity == null || !roomAmenitiesEntity.Amenities.Any())
             {
-                return Result<List<GetAmenitiesByRoomAmenitiesIdResponseDto>>.ErrorResult("No amenities found for the specified RoomAmenitiesId.", HttpStatusCode.NotFound);
+                return Result<List<GetAmenitiesByRoomAmenitiesIdResponseDto>>.NotFound("No amenities found for the specified RoomAmenitiesId.");
             }
 
             // Map amenities to DTOs
@@ -58,7 +58,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
                 IsActive = amenity.IsActive
             }).ToList();
 
-            return Result<List<GetAmenitiesByRoomAmenitiesIdResponseDto>>.SuccessResult(amenityDtos, HttpStatusCode.OK);
+            return Result<List<GetAmenitiesByRoomAmenitiesIdResponseDto>>.SuccessResult(amenityDtos);
         }
     }
 

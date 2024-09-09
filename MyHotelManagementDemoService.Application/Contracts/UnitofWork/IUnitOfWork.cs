@@ -20,6 +20,7 @@ namespace MyHotelManagementDemoService.Application.Contracts.UnitofWork
         IBookingRepository bookingRepository { get; }
         IFeedbackRepository feedbackRepository { get; }
         IStateRepository stateRepository { get; }
+        IPaymentRepository paymentRepository { get; }
 
         Task<int> Save();
     }

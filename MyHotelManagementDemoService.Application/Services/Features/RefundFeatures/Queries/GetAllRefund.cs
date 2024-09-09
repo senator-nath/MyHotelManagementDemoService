@@ -36,7 +36,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RefundFeatu
                 DateIssued = refund.DateIssued
             }).ToList();
 
-            return Result<List<GetRefundsResponseDto>>.SuccessResult(refundDtos, HttpStatusCode.OK);
+            return Result<List<GetRefundsResponseDto>>.SuccessResult(refundDtos);
         }
     }
 

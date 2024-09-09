@@ -40,7 +40,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                 if (request.Id <= 0)
                 {
                     _logger.LogWarning("Invalid room ID: {Id}", request.Id);
-                    return Result<Unit>.ErrorResult("Invalid room ID", HttpStatusCode.BadRequest);
+                    return Result<Unit>.NotFound("Invalid room ID");
                 }
 
                 var roomEntity = await _unitOfWork.roomRepository.GetByColumnAsync(r => r.Id == request.Id);
@@ -48,7 +48,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                 if (roomEntity == null)
                 {
                     _logger.LogWarning("Room not found: {Id}", request.Id);
-                    return Result<Unit>.ErrorResult("Room not found", HttpStatusCode.NotFound);
+                    return Result<Unit>.NotFound("Room not found");
                 }
 
                 _unitOfWork.roomRepository.Delete(roomEntity);
@@ -56,12 +56,12 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
 
                 _logger.LogInformation("Room deleted: {Id}", request.Id);
 
-                return Result<Unit>.SuccessResult(Unit.Value, HttpStatusCode.OK);
+                return Result<Unit>.SuccessResult(Unit.Value);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting room: {Id}", request.Id);
-                return Result<Unit>.ErrorResult("Error deleting room", HttpStatusCode.InternalServerError);
+                return Result<Unit>.InternalServerError();
             }
         }
     }

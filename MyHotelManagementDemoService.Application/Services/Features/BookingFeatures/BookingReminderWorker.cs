@@ -13,7 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MyHotelManagementDemoService.Application.Services.Features.BookingFeatures
+namespace MyHotelManagementDemoService.Application.Services.Features.BookingFeatures.Queries
 {
     public class BookingReminderWorker : BackgroundService
     {

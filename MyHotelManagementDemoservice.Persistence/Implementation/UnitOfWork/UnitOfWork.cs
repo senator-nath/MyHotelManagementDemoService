@@ -34,6 +34,7 @@ namespace MyHotelManagementDemoService.Persistence.Implementation.UnitOfWork
 
         public IRoomAmenitiesRepository roomAmenitiesRepository { get; }
         public IStateRepository stateRepository { get; }
+        public IPaymentRepository paymentRepository { get; }
 
         public UnitOfWork(HotelManagementDbContext dbContext)
         {
@@ -47,6 +48,7 @@ namespace MyHotelManagementDemoService.Persistence.Implementation.UnitOfWork
             feedbackRepository = new FeedbackRepository(dbContext);
             roomAmenitiesRepository = new RoomAmenitiesRepository(dbContext);
             stateRepository = new StateRepository(dbContext);
+            paymentRepository = new PaymentRepository(dbContext);
 
         }
         public void Dispose()

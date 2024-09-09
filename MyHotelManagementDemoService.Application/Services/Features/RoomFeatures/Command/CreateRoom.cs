@@ -66,12 +66,12 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                     RoomAmenitiesId = roomEntity.RoomAmenitiesId
                 };
 
-                return Result<CreateRoomResponseDto>.SuccessResult(responseDto, HttpStatusCode.OK);
+                return Result<CreateRoomResponseDto>.SuccessResult(responseDto);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating room");
-                return Result<CreateRoomResponseDto>.ErrorResult("Error creating room", HttpStatusCode.InternalServerError);
+                return Result<CreateRoomResponseDto>.InternalServerError();
             }
         }
 

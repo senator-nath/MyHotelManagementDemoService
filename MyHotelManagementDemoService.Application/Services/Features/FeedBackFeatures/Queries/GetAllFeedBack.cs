@@ -38,7 +38,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.FeedBackFea
                 UserName = feedback.User?.UserName
             }).ToList();
 
-            return Result<List<GetFeedbacksResponseDto>>.SuccessResult(feedbackDtos, HttpStatusCode.OK);
+            return Result<List<GetFeedbacksResponseDto>>.SuccessResult(feedbackDtos);
         }
     }
 

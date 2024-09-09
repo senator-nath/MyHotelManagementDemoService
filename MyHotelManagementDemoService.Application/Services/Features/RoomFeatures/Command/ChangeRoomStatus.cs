@@ -42,7 +42,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                 if (request.RequestDto.RoomId <= 0)
                 {
                     _logger.LogWarning("Invalid room ID: {RoomId}", request.RequestDto.RoomId);
-                    return Result<ChangeRoomStatusResponseDto>.ErrorResult("Invalid room ID", HttpStatusCode.BadRequest);
+                    return Result<ChangeRoomStatusResponseDto>.NotFound("Invalid room ID");
                 }
 
                 var roomEntity = await _unitOfWork.roomRepository.GetByIdAsync(request.RequestDto.RoomId);
@@ -50,7 +50,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                 if (roomEntity == null)
                 {
                     _logger.LogWarning("Room not found: {RoomId}", request.RequestDto.RoomId);
-                    return Result<ChangeRoomStatusResponseDto>.ErrorResult("Room not found", HttpStatusCode.NotFound);
+                    return Result<ChangeRoomStatusResponseDto>.NotFound("Room not found");
                 }
 
                 var oldStatus = roomEntity.Status;
@@ -70,12 +70,12 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
 
                 _logger.LogInformation("Room status changed: {RoomId} - {OldStatus} -> {NewStatus}", roomEntity.Id, oldStatus, roomEntity.Status);
 
-                return Result<ChangeRoomStatusResponseDto>.SuccessResult(responseDto, HttpStatusCode.OK);
+                return Result<ChangeRoomStatusResponseDto>.SuccessResult(responseDto);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error changing room status: {RoomId}", request.RequestDto.RoomId);
-                return Result<ChangeRoomStatusResponseDto>.ErrorResult("Error changing room status", HttpStatusCode.InternalServerError);
+                return Result<ChangeRoomStatusResponseDto>.InternalServerError();
             }
         }
 

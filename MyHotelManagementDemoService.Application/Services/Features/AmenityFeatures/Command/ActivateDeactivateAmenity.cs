@@ -1,6 +1,7 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
 using MyHotelManagementDemoService.Application.Dtos.Request;
 using System;
@@ -28,39 +29,54 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
     public class ActivateDeactivateAmenityHandler : IRequestHandler<ActivateDeactivateAmenity, Result<ActivateDeactivateAmenityRequestDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<ActivateDeactivateAmenityHandler> _logger;
 
-        public ActivateDeactivateAmenityHandler(IUnitOfWork unitOfWork)
+        public ActivateDeactivateAmenityHandler(IUnitOfWork unitOfWork, ILogger<ActivateDeactivateAmenityHandler> logger)
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task<Result<ActivateDeactivateAmenityRequestDto>> Handle(ActivateDeactivateAmenity request, CancellationToken cancellationToken)
         {
-
-            var amenity = await _unitOfWork.amenityRepository.GetByIdAsync(request.AmenityId);
-
-            if (amenity == null)
+            try
             {
+                _logger.LogInformation("Activating/Deactivating amenity with ID: {AmenityId}", request.AmenityId);
 
-                return Result<ActivateDeactivateAmenityRequestDto>.ErrorResult("Amenity not found.", HttpStatusCode.NotFound);
+                if (request.AmenityId <= 0)
+                {
+                    _logger.LogWarning("Invalid amenity ID: {AmenityId}", request.AmenityId);
+                    return Result<ActivateDeactivateAmenityRequestDto>.BadRequest();
+                }
+
+                var amenity = await _unitOfWork.amenityRepository.GetByIdAsync(request.AmenityId);
+
+                if (amenity == null)
+                {
+                    _logger.LogWarning("Amenity not found: {AmenityId}", request.AmenityId);
+                    return Result<ActivateDeactivateAmenityRequestDto>.NotFound("Amenity not found");
+                }
+
+                amenity.IsActive = request.IsActive;
+
+                _unitOfWork.amenityRepository.Update(amenity);
+                await _unitOfWork.Save();
+
+                var responseDto = new ActivateDeactivateAmenityRequestDto
+                {
+                    AmenityId = amenity.Id,
+                    IsActive = amenity.IsActive
+                };
+
+                _logger.LogInformation("Amenity with ID: {AmenityId} activated/deactivated successfully", request.AmenityId);
+
+                return Result<ActivateDeactivateAmenityRequestDto>.SuccessResult(responseDto);
             }
-
-
-            amenity.IsActive = request.IsActive;
-
-
-            _unitOfWork.amenityRepository.Update(amenity);
-            await _unitOfWork.Save();
-
-
-            var responseDto = new ActivateDeactivateAmenityRequestDto
+            catch (Exception ex)
             {
-                AmenityId = amenity.Id,
-                IsActive = amenity.IsActive
-            };
-
-
-            return Result<ActivateDeactivateAmenityRequestDto>.SuccessResult(responseDto, HttpStatusCode.OK);
+                _logger.LogError(ex, "Error activating/deactivating amenity with ID: {AmenityId}", request.AmenityId);
+                return Result<ActivateDeactivateAmenityRequestDto>.InternalServerError();
+            }
         }
     }
     public class ActivateDeactivateAmenityRequestDto

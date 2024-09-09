@@ -38,7 +38,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.FeedBackFea
             {
                 Comments = request.RequestDto.Comments,
                 Rating = request.RequestDto.Rating,
-                DateSubmitted = DateTime.UtcNow, // Set the current date and time
+                DateSubmitted = DateTime.UtcNow,
                 UserId = request.RequestDto.UserId
             };
 
@@ -54,7 +54,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.FeedBackFea
                 UserId = feedbackEntity.UserId
             };
 
-            return Result<CreateFeedbackResponseDto>.SuccessResult(responseDto, HttpStatusCode.Created);
+            return Result<CreateFeedbackResponseDto>.SuccessResult(responseDto);
         }
     }
 

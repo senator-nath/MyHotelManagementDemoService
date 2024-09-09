@@ -42,7 +42,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
 
             if (amenityEntity == null)
             {
-                return Result<UpdateAmenityResponseDto>.ErrorResult("Amenity not found", HttpStatusCode.NotFound);
+                return Result<UpdateAmenityResponseDto>.NotFound("Amenity not found");
             }
 
             // Update amenity entity with the new details from RequestDto
@@ -63,7 +63,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
                 RoomAmenitiesId = amenityEntity.RoomAmenitiesId
             };
 
-            return Result<UpdateAmenityResponseDto>.SuccessResult(responseDto, HttpStatusCode.OK);
+            return Result<UpdateAmenityResponseDto>.SuccessResult(responseDto);
         }
     }
 

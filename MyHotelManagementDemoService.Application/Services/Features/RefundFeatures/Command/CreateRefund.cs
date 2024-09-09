@@ -52,7 +52,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RefundFeatu
                 DateIssued = refundEntity.DateIssued
             };
 
-            return Result<CreateRefundResponseDto>.SuccessResult(responseDto, HttpStatusCode.Created);
+            return Result<CreateRefundResponseDto>.SuccessResult(responseDto);
         }
     }
 

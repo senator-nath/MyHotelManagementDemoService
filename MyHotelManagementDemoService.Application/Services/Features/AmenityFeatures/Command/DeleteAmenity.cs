@@ -36,13 +36,13 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
 
             if (amenityEntity == null)
             {
-                return Result<Unit>.ErrorResult("Amenity not found", HttpStatusCode.NotFound);
+                return Result<Unit>.NotFound("RoomType not found");
             }
 
             _unitOfWork.amenityRepository.Delete(amenityEntity);
             await _unitOfWork.Save();
 
-            return Result<Unit>.SuccessResult(Unit.Value, HttpStatusCode.OK);
+            return Result<Unit>.SuccessResult("Success");
         }
     }
 }

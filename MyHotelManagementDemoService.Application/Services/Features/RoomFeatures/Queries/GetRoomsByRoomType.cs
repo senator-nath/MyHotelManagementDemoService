@@ -43,7 +43,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                 if (request.RoomTypeId <= 0)
                 {
                     _logger.LogWarning("Invalid room type ID: {RoomTypeId}", request.RoomTypeId);
-                    return Result<List<GetRoomsByRoomTypeResponseDto>>.ErrorResult("Invalid room type ID", HttpStatusCode.BadRequest);
+                    return Result<List<GetRoomsByRoomTypeResponseDto>>.BadRequest();
                 }
 
                 var rooms = await _unitOfWork.roomRepository.GetWhereAndIncludeAsync(
@@ -54,7 +54,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                 if (rooms == null || !rooms.Any())
                 {
                     _logger.LogWarning("No rooms found for room type ID: {RoomTypeId}", request.RoomTypeId);
-                    return Result<List<GetRoomsByRoomTypeResponseDto>>.ErrorResult("No rooms found", HttpStatusCode.NotFound);
+                    return Result<List<GetRoomsByRoomTypeResponseDto>>.NotFound("No rooms found");
                 }
 
                 var roomDtos = rooms.Select(r => new GetRoomsByRoomTypeResponseDto
@@ -67,12 +67,12 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
 
                 _logger.LogInformation("Rooms retrieved successfully for room type ID: {RoomTypeId}", request.RoomTypeId);
 
-                return Result<List<GetRoomsByRoomTypeResponseDto>>.SuccessResult(roomDtos, HttpStatusCode.OK);
+                return Result<List<GetRoomsByRoomTypeResponseDto>>.SuccessResult(roomDtos);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving rooms for room type ID: {RoomTypeId}", request.RoomTypeId);
-                return Result<List<GetRoomsByRoomTypeResponseDto>>.ErrorResult("Error retrieving rooms", HttpStatusCode.InternalServerError);
+                return Result<List<GetRoomsByRoomTypeResponseDto>>.InternalServerError();
             }
         }
     }
