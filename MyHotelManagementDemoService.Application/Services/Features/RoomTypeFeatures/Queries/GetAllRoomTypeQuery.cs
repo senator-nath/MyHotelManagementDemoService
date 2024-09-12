@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BlogApp.Application.Helpers;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
 
 namespace HotelManagement.Application.Query.RoomType
@@ -17,24 +18,39 @@ namespace HotelManagement.Application.Query.RoomType
     public class GetAllRoomTypeQueryHandler : IRequestHandler<GetAllRoomTypeQuery, Result<IEnumerable<RoomTypeResponseDto>>>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<GetAllRoomTypeQueryHandler> _logger;
 
-        public GetAllRoomTypeQueryHandler(IUnitOfWork unitOfWork)
+        public GetAllRoomTypeQueryHandler(IUnitOfWork unitOfWork, ILogger<GetAllRoomTypeQueryHandler> logger)
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
+
         public async Task<Result<IEnumerable<RoomTypeResponseDto>>> Handle(GetAllRoomTypeQuery request, CancellationToken cancellationToken)
         {
-            var roomType = await _unitOfWork.roomTypeRepository.GetAllAsync();
-
-            var roomTypeDto = roomType.Select
-            (p => new RoomTypeResponseDto
+            try
             {
-                TypeName = p.TypeName,
-                Description = p.Description,
-                AccessibilityFeatures = p.AccessibilityFeatures,
-            });
+                _logger.LogInformation("Getting all room types");
 
-            return Result<IEnumerable<RoomTypeResponseDto>>.SuccessResult(roomTypeDto);
+                var roomType = await _unitOfWork.roomTypeRepository.GetAllAsync();
+
+                var roomTypeDto = roomType.Select
+                (p => new RoomTypeResponseDto
+                {
+                    TypeName = p.TypeName,
+                    Description = p.Description,
+                    AccessibilityFeatures = p.AccessibilityFeatures,
+                });
+
+                _logger.LogInformation("Room types retrieved successfully");
+
+                return Result<IEnumerable<RoomTypeResponseDto>>.SuccessResult(roomTypeDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting room types");
+                return Result<IEnumerable<RoomTypeResponseDto>>.InternalServerError();
+            }
         }
     }
     public class RoomTypeResponseDto

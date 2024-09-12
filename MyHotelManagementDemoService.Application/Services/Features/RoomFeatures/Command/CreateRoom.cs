@@ -39,6 +39,15 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
         {
             try
             {
+                _logger.LogInformation("Creating room");
+
+                var existingRoom = await _unitOfWork.roomRepository.GetByColumnAsync(r => r.RoomNumber == request.RequestDto.RoomNumber);
+
+                if (existingRoom != null)
+                {
+                    _logger.LogError("Room already exists");
+                    return Result<CreateRoomResponseDto>.Conflict("Room already exists");
+                }
 
                 var roomEntity = new Room
                 {
@@ -74,7 +83,6 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                 return Result<CreateRoomResponseDto>.InternalServerError();
             }
         }
-
     }
     public class CreateRoomRequestDto
     {

@@ -50,7 +50,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                     Id = r.Id,
                     RoomNumber = r.RoomNumber,
                     Price = r.Price,
-                    RoomTypeName = r.RoomType?.TypeName // Null-conditional operator to avoid null reference exception
+                    RoomTypeName = r.RoomType?.TypeName
                 }).ToList();
 
                 _logger.LogInformation("Available rooms retrieved successfully");

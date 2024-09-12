@@ -39,13 +39,6 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
         {
             try
             {
-
-                if (request.RoomTypeId <= 0)
-                {
-                    _logger.LogWarning("Invalid room type ID: {RoomTypeId}", request.RoomTypeId);
-                    return Result<List<GetRoomsByRoomTypeResponseDto>>.BadRequest();
-                }
-
                 var rooms = await _unitOfWork.roomRepository.GetWhereAndIncludeAsync(
                     r => r.RoomTypeId == request.RoomTypeId,
                     include: r => r.Include(rt => rt.RoomType)
@@ -62,7 +55,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                     Id = r.Id,
                     RoomNumber = r.RoomNumber,
                     Price = r.Price,
-                    RoomTypeName = r.RoomType?.TypeName // Null-conditional operator to avoid null reference exception
+                    RoomTypeName = r.RoomType?.TypeName
                 }).ToList();
 
                 _logger.LogInformation("Rooms retrieved successfully for room type ID: {RoomTypeId}", request.RoomTypeId);

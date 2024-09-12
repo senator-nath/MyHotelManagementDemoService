@@ -36,13 +36,6 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
         {
             try
             {
-
-                if (request.Id <= 0)
-                {
-                    _logger.LogWarning("Invalid room ID: {Id}", request.Id);
-                    return Result<Unit>.NotFound("Invalid room ID");
-                }
-
                 var roomEntity = await _unitOfWork.roomRepository.GetByColumnAsync(r => r.Id == request.Id);
 
                 if (roomEntity == null)

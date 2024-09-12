@@ -1,5 +1,6 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
 using MyHotelManagementDemoService.Application.Dtos.Request;
 using MyHotelManagementDemoService.Application.Dtos.Response;
@@ -27,46 +28,61 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
     }
 
 
+
+
     public class UpdateAmenityHandler : IRequestHandler<UpdateAmenity, Result<UpdateAmenityResponseDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<UpdateAmenityHandler> _logger;
 
-        public UpdateAmenityHandler(IUnitOfWork unitOfWork)
+        public UpdateAmenityHandler(IUnitOfWork unitOfWork, ILogger<UpdateAmenityHandler> logger)
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task<Result<UpdateAmenityResponseDto>> Handle(UpdateAmenity request, CancellationToken cancellationToken)
         {
-            var amenityEntity = await _unitOfWork.amenityRepository.GetByColumnAsync(a => a.Id == request.Id);
-
-            if (amenityEntity == null)
+            try
             {
-                return Result<UpdateAmenityResponseDto>.NotFound("Amenity not found");
+                _logger.LogInformation("Updating amenity");
+
+                var amenityEntity = await _unitOfWork.amenityRepository.GetByColumnAsync(a => a.Id == request.Id);
+
+                if (amenityEntity == null)
+                {
+                    _logger.LogError("Amenity not found");
+                    return Result<UpdateAmenityResponseDto>.NotFound("Amenity not found");
+                }
+
+                amenityEntity.Name = request.RequestDto.Name;
+                amenityEntity.Description = request.RequestDto.Description;
+                amenityEntity.IsActive = request.RequestDto.IsActive;
+                amenityEntity.RoomAmenitiesId = request.RequestDto.RoomAmenitiesId;
+
+                _unitOfWork.amenityRepository.Update(amenityEntity);
+                await _unitOfWork.Save();
+
+                _logger.LogInformation("Amenity updated successfully");
+
+                var responseDto = new UpdateAmenityResponseDto
+                {
+                    Id = amenityEntity.Id,
+                    Name = amenityEntity.Name,
+                    Description = amenityEntity.Description,
+                    IsActive = amenityEntity.IsActive,
+                    RoomAmenitiesId = amenityEntity.RoomAmenitiesId
+                };
+
+                return Result<UpdateAmenityResponseDto>.SuccessResult(responseDto);
             }
-
-            // Update amenity entity with the new details from RequestDto
-            amenityEntity.Name = request.RequestDto.Name;
-            amenityEntity.Description = request.RequestDto.Description;
-            amenityEntity.IsActive = request.RequestDto.IsActive;
-            amenityEntity.RoomAmenitiesId = request.RequestDto.RoomAmenitiesId;
-
-            _unitOfWork.amenityRepository.Update(amenityEntity);
-            await _unitOfWork.Save();
-
-            var responseDto = new UpdateAmenityResponseDto
+            catch (Exception ex)
             {
-                Id = amenityEntity.Id,
-                Name = amenityEntity.Name,
-                Description = amenityEntity.Description,
-                IsActive = amenityEntity.IsActive,
-                RoomAmenitiesId = amenityEntity.RoomAmenitiesId
-            };
-
-            return Result<UpdateAmenityResponseDto>.SuccessResult(responseDto);
+                _logger.LogError(ex, "Error updating amenity");
+                return Result<UpdateAmenityResponseDto>.InternalServerError();
+            }
         }
     }
-
     public class UpdateAmenityResponseDto
     {
         public int Id { get; set; }
@@ -85,4 +101,5 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
 
 
 }
+
 

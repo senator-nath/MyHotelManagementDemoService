@@ -1,5 +1,6 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
 using System;
 using System.Collections.Generic;
@@ -10,50 +11,7 @@ using System.Threading.Tasks;
 
 namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeatures.Command
 {
-    //public class AssignAmenityToRoomCommand : IRequest<Result<Unit>>
-    //{
-    //    internal readonly int RoomAmenitiesId;
-    //    internal readonly int AmenityId;
 
-    //    public AssignAmenityToRoomCommand(int roomAmenitiesId, int amenityId)
-    //    {
-    //        RoomAmenitiesId = roomAmenitiesId;
-    //        AmenityId = amenityId;
-    //    }
-    //}
-
-    //public class AssignAmenityToRoomHandler : IRequestHandler<AssignAmenityToRoomCommand, Result<Unit>>
-    //{
-    //    private readonly IUnitOfWork _unitOfWork;
-
-    //    public AssignAmenityToRoomHandler(IUnitOfWork unitOfWork)
-    //    {
-    //        _unitOfWork = unitOfWork;
-    //    }
-
-    //    public async Task<Result<Unit>> Handle(AssignAmenityToRoomCommand request, CancellationToken cancellationToken)
-    //    {
-    //        var roomAmenities = await _unitOfWork.roomAmenitiesRepository.GetByColumnAsync(x => x.Id == request.RoomAmenitiesId);
-
-    //        if (roomAmenities == null)
-    //        {
-    //            return Result<Unit>.NotFound("Room Amenities not found");
-    //        }
-
-    //        var amenity = await _unitOfWork.amenityRepository.GetByColumnAsync(x => x.Id == request.AmenityId);
-
-    //        if (amenity == null)
-    //        {
-    //            return Result<Unit>.NotFound("Amenity not found");
-    //        }
-
-    //        roomAmenities.Amenities.Add(amenity);
-    //        _unitOfWork.roomAmenitiesRepository.Update(roomAmenities);
-    //        await _unitOfWork.Save();
-
-    //        return Result<Unit>.SuccessResult("Amenity assigned to Room Amenities successfully");
-    //    }
-    //}
     public class AssignAmenityToRoomAmenity : IRequest<Result<AssignAmenityToRoomAmenityResponseDto>>
     {
         public int AmenityId { get; }
@@ -69,44 +27,61 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
     public class AssignAmenityToRoomAmenityHandler : IRequestHandler<AssignAmenityToRoomAmenity, Result<AssignAmenityToRoomAmenityResponseDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<AssignAmenityToRoomAmenityHandler> _logger;
 
-        public AssignAmenityToRoomAmenityHandler(IUnitOfWork unitOfWork)
+        public AssignAmenityToRoomAmenityHandler(IUnitOfWork unitOfWork, ILogger<AssignAmenityToRoomAmenityHandler> logger)
         {
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task<Result<AssignAmenityToRoomAmenityResponseDto>> Handle(AssignAmenityToRoomAmenity request, CancellationToken cancellationToken)
         {
-            var amenityEntity = await _unitOfWork.amenityRepository.GetByColumnAsync(a => a.Id == request.AmenityId);
-
-            if (amenityEntity == null)
+            try
             {
-                return Result<AssignAmenityToRoomAmenityResponseDto>.NotFound("Amenity not found");
+                _logger.LogInformation("Assigning amenity to room amenity");
+
+                var amenityEntity = await _unitOfWork.amenityRepository.GetByColumnAsync(a => a.Id == request.AmenityId);
+
+                if (amenityEntity == null)
+                {
+                    _logger.LogError("Amenity not found");
+                    return Result<AssignAmenityToRoomAmenityResponseDto>.NotFound("Amenity not found");
+                }
+
+                if (!amenityEntity.IsActive)
+                {
+                    _logger.LogError("Amenity is not active");
+                    return Result<AssignAmenityToRoomAmenityResponseDto>.NotFound("Amenity is not active");
+                }
+
+                var roomAmenityEntity = await _unitOfWork.roomAmenitiesRepository.GetByColumnAsync(a => a.Id == request.RoomAmenitiesId);
+
+                if (roomAmenityEntity == null)
+                {
+                    _logger.LogError("Room amenity not found");
+                    return Result<AssignAmenityToRoomAmenityResponseDto>.NotFound("Room amenity not found");
+                }
+
+                roomAmenityEntity.Amenities.Add(amenityEntity);
+                _unitOfWork.roomAmenitiesRepository.Update(roomAmenityEntity);
+                await _unitOfWork.Save();
+
+                _logger.LogInformation("Amenity assigned to room amenity successfully");
+
+                var responseDto = new AssignAmenityToRoomAmenityResponseDto
+                {
+                    AmenityId = amenityEntity.Id,
+                    RoomAmenitiesId = roomAmenityEntity.Id
+                };
+
+                return Result<AssignAmenityToRoomAmenityResponseDto>.SuccessResult(responseDto);
             }
-
-            if (!amenityEntity.IsActive)
+            catch (Exception ex)
             {
-                return Result<AssignAmenityToRoomAmenityResponseDto>.NotFound("Amenity is not active");
+                _logger.LogError(ex, "Error assigning amenity to room amenity");
+                return Result<AssignAmenityToRoomAmenityResponseDto>.InternalServerError();
             }
-
-            var roomAmenityEntity = await _unitOfWork.roomAmenitiesRepository.GetByColumnAsync(a => a.Id == request.RoomAmenitiesId);
-
-            if (roomAmenityEntity == null)
-            {
-                return Result<AssignAmenityToRoomAmenityResponseDto>.NotFound("Room amenity not found");
-            }
-
-            roomAmenityEntity.Amenities.Add(amenityEntity);
-            _unitOfWork.roomAmenitiesRepository.Update(roomAmenityEntity);
-            await _unitOfWork.Save();
-
-            var responseDto = new AssignAmenityToRoomAmenityResponseDto
-            {
-                AmenityId = amenityEntity.Id,
-                RoomAmenitiesId = roomAmenityEntity.Id
-            };
-
-            return Result<AssignAmenityToRoomAmenityResponseDto>.SuccessResult(responseDto);
         }
     }
 
