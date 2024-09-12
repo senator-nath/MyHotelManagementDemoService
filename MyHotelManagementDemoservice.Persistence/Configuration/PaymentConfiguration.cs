@@ -32,10 +32,10 @@ namespace MyHotelManagementDemoService.Persistence.Configuration
                 .IsRequired()
                 .HasColumnType("datetime");
 
-            builder.HasOne(p => p.Booking)
-                .WithOne(b => b.Payment)
-                .HasForeignKey<Payment>(p => p.BookingId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //builder.HasOne(p => p.Booking)
+            //    .WithOne(b => b.Payment)
+            //    .HasForeignKey<Payment>(p => p.BookingId)
+            //    .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

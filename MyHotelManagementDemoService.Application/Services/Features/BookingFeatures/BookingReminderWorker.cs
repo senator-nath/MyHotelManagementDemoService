@@ -17,8 +17,8 @@ namespace MyHotelManagementDemoService.Application.Services.Features.BookingFeat
 {
     public class BookingReminderWorker : BackgroundService
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<BookingReminderWorker> _logger;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IHttpClientFactory _httpClientFactory;
 
         public BookingReminderWorker(IServiceProvider serviceProvider, ILogger<BookingReminderWorker> logger, IHttpClientFactory httpClientFactory)
@@ -33,7 +33,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.BookingFeat
             while (!stoppingToken.IsCancellationRequested)
             {
                 await ProcessBookingRemindersAsync(stoppingToken);
-                await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+                await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
             }
         }
 
@@ -42,16 +42,21 @@ namespace MyHotelManagementDemoService.Application.Services.Features.BookingFeat
             using var scope = _serviceProvider.CreateScope();
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-
             var upcomingBookings = await unitOfWork.bookingRepository.GetWhereAndIncludeAsync(
-                b => b.BookingDate.Date == DateTime.Today.AddDays(1).Date,
-                include: b => b.Include(x => x.User).Include(x => x.Room)); // Include User and Room
+                b => b.CheckInDate.Date == DateTime.Now.AddDays(1).Date,
+                include: b => b.Include(x => x.User).Include(x => x.Room));
 
+            _logger.LogInformation($"Upcoming bookings count: {(upcomingBookings != null ? upcomingBookings.Count() : 0)}");
+
+            if (upcomingBookings is null)
+            {
+                _logger.LogWarning("No upcoming bookings found.");
+                return;
+            }
             foreach (var booking in upcomingBookings)
             {
                 try
                 {
-                    // Send reminder logic here
                     await SendReminderAsync(booking);
                     _logger.LogInformation($"Sent reminder for booking ID: {booking.Id}");
                 }
@@ -60,8 +65,19 @@ namespace MyHotelManagementDemoService.Application.Services.Features.BookingFeat
                     _logger.LogError(ex, $"Error sending reminder for booking ID: {booking.Id}");
                 }
             }
+        }
 
-            await unitOfWork.Save(); // If any state changes are made
+        private async Task<bool> SendReminderAsync(Booking booking)
+        {
+            var request = new SendReminderEmail
+            {
+                UserEmail = booking.User.Email,
+                FirstName = booking.User.FirstName,
+                checkInDate = booking.CheckInDate,
+                BookingId = booking.Id
+            };
+
+            return await SendEmailAsync(request);
         }
 
         private async Task<bool> SendEmailAsync(SendReminderEmail request)
@@ -71,10 +87,10 @@ namespace MyHotelManagementDemoService.Application.Services.Features.BookingFeat
             {
                 To = request.UserEmail,
                 Subject = "Upcoming Booking Reminder",
-                Body = $"Hello {request.FirstName}, this is a reminder that your booking is tomorrow, {request.BookingDate.Date}."
+                Body = $"Hello {request.FirstName}, this is a reminder that your booking is tomorrow, {request.checkInDate.Date}."
             };
 
-            var sendEmail = await httpClient.PostAsJsonAsync("https://localhost:7168/api/Notification", emailModel);
+            var sendEmail = await httpClient.PostAsJsonAsync("https://localhost:7168/api/EmailService", emailModel);
 
             if (sendEmail.IsSuccessStatusCode)
             {
@@ -85,24 +101,13 @@ namespace MyHotelManagementDemoService.Application.Services.Features.BookingFeat
             _logger.LogError($"Error sending reminder email for booking ID: {request.BookingId}");
             return false;
         }
-        private async Task<bool> SendReminderAsync(Booking booking)
-        {
-            var request = new SendReminderEmail
-            {
-                UserEmail = booking.User.Email,
-                FirstName = booking.User.FirstName,
-                BookingDate = booking.BookingDate,
-                BookingId = booking.Id
-            };
-
-            return await SendEmailAsync(request);
-        }
     }
+
     public class SendReminderEmail
     {
         public string UserEmail { get; set; }
         public string FirstName { get; set; }
-        public DateTime BookingDate { get; set; }
+        public DateTime checkInDate { get; set; }
         public int BookingId { get; set; }
     }
 }

@@ -20,7 +20,7 @@ namespace MyHotelManagementDemoService.Application
 
             services.AddTransient<IUserService, UserService>();
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-            services.AddHostedService<BookingReminderWorker>();
+            services.AddHostedService< BookingReminderWorker>();
             services.AddHttpClient();
             services.AddAuthentication(options =>
             {

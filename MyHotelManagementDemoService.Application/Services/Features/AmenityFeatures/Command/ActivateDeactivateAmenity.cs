@@ -43,11 +43,6 @@ namespace MyHotelManagementDemoService.Application.Services.Features.AmenityFeat
             {
                 _logger.LogInformation("Activating/Deactivating amenity with ID: {AmenityId}", request.AmenityId);
 
-                if (request.AmenityId <= 0)
-                {
-                    _logger.LogWarning("Invalid amenity ID: {AmenityId}", request.AmenityId);
-                    return Result<ActivateDeactivateAmenityRequestDto>.BadRequest();
-                }
 
                 var amenity = await _unitOfWork.amenityRepository.GetByIdAsync(request.AmenityId);
 

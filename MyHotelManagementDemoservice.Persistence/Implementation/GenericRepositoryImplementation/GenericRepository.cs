@@ -69,5 +69,13 @@ namespace MyHotelManagementDemoService.Persistence.Implementation.GenericReposit
 
             return await query.ToListAsync();
         }
+        public async Task<IEnumerable<T>> GetWhereAndIncludeQueryAsync(
+    Expression<Func<T, bool>> predicate,
+    Func<IQueryable<T>, IQueryable<T>> include)
+        {
+            var query = _dbContext.Set<T>().Where(predicate);
+            query = include(query);
+            return await query.ToListAsync();
+        }
     }
 }

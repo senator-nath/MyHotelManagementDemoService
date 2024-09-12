@@ -21,7 +21,7 @@ namespace MyHotelManagementDemoService.API.Controllers
         {
             _mediator = mediator;
         }
-        [HttpPost("create-room")]
+        [HttpPost("create-amenity")]
         public async Task<IActionResult> CreateAmenity([FromBody] CreateAmenityRequestDto requestDto)
         {
             var room = await _mediator.Send(new CreateAmenity(requestDto));
@@ -64,12 +64,13 @@ namespace MyHotelManagementDemoService.API.Controllers
 
             return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
         }
-        [HttpPost("assign-amenity")]
-        public async Task<ActionResult<Result<Unit>>> AssignAmenityToRoom(int RoomAmenitiesId, int AmenityId)
+        [HttpPost]
+        public async Task<ActionResult<Result<AssignAmenityToRoomAmenityResponseDto>>> AssignAmenityToRoomAmenity(AssignAmenityToRoomAmenityRequestDto request)
         {
-            var command = new AssignAmenityToRoomCommand(RoomAmenitiesId, AmenityId);
+            var command = new AssignAmenityToRoomAmenity(request.AmenityId, request.RoomAmenitiesId);
             var result = await _mediator.Send(command);
-            return Ok(result);
+
+            return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);
         }
     }
 }

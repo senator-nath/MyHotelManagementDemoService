@@ -21,5 +21,8 @@ namespace MyHotelManagementDemoService.Application.Contracts.GenericRepository
         Task<IEnumerable<T>> GetWhereAndIncludeAsync(
        Expression<Func<T, bool>> filter,
        Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
+        Task<IEnumerable<T>> GetWhereAndIncludeQueryAsync(
+   Expression<Func<T, bool>> predicate,
+   Func<IQueryable<T>, IQueryable<T>> include);
     }
 }

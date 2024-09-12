@@ -18,7 +18,7 @@ namespace MyHotelManagementDemoService.Domain.Entities
         public User User { get; set; }
         public int RoomId { get; set; }
         public Room Room { get; set; }
-        public int PaymentId { get; set; }
-        public Payment Payment { get; set; }
+        //public int PaymentId { get; set; }
+        // public Payment Payment { get; set; }
     }
 }

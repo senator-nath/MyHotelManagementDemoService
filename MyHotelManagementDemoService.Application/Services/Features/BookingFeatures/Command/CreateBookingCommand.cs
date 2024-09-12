@@ -53,9 +53,9 @@ namespace MyHotelManagementDemoService.Application.Services.Features.BookingFeat
                 .GreaterThan(0)
                 .WithMessage("Room ID must be a positive integer.");
 
-            RuleFor(x => x.PaymentId)
-                .GreaterThan(0)
-                .WithMessage("Payment ID must be a positive integer.");
+            //RuleFor(x => x.PaymentId)
+            //    .GreaterThan(0)
+            //    .WithMessage("Payment ID must be a positive integer.");
         }
     }
 
@@ -112,7 +112,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.BookingFeat
                 NumberOfGuests = request.requestDto.NumberOfOcupant,
                 UserId = request.requestDto.UserId,
                 RoomId = request.requestDto.RoomId,
-                PaymentId = request.requestDto.PaymentId,
+                //PaymentId = request.requestDto.PaymentId,
             };
 
             var response = new BookingResponse
