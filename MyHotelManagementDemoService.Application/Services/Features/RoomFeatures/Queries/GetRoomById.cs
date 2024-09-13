@@ -1,7 +1,9 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
+using MyHotelManagementDemoService.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +23,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
             Id = id;
         }
     }
+
     public class GetRoomByIdHandler : IRequestHandler<GetRoomById, Result<GetRoomByIdResponseDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -36,28 +39,41 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
         {
             try
             {
+                var room = await _unitOfWork.roomRepository.GetWhereAndIncludeAsync(
+                    x => x.Id == request.Id,
+                    include: x => x.Include(y => y.RoomType).Include(y => y.RoomAmenities).ThenInclude(z => z.Amenities)
+                );
 
-                var room = await _unitOfWork.roomRepository.GetByIdAsync(request.Id);
-
-                if (room == null)
+                if (room == null || !room.Any())
                 {
-                    _logger.LogWarning("Room not found: {Id}", request.Id);
+                    _logger.LogWarning("Room: {Id} not found", request.Id);
                     return Result<GetRoomByIdResponseDto>.NotFound("Room not found");
                 }
 
-                var roomDto = new GetRoomByIdResponseDto
+                var roomDto = room.Select(r => new GetRoomByIdResponseDto
                 {
-                    Id = room.Id,
-                    RoomNumber = room.RoomNumber,
-                    Price = room.Price,
-                    Status = room.Status,
-                    DateCreated = room.DateCreated,
-                    RoomTypeId = room.RoomTypeId,
-                    RoomAmenitiesId = room.RoomAmenitiesId,
-                    Urls = room.Url
-                };
+                    Id = r.Id,
+                    RoomNumber = r.RoomNumber,
+                    Price = r.Price,
+                    Status = r.Status,
+                    DateCreated = r.DateCreated,
+                    RoomType = new RoomTypeResponseDto
+                    {
+                        Id = r.RoomType.Id,
+                        TypeName = r.RoomType.TypeName,
+                        Description = r.RoomType.Description,
+                        AccessibilityFeatures = r.RoomType.AccessibilityFeatures,
+                    },
+                    RoomAmenities = new RoomAmenitiesResponseDto
+                    {
+                        Id = r.RoomAmenities.Id,
+                        Name = r.RoomAmenities.Name,
+                        Amenities = r.RoomAmenities.Amenities.Select(a => a.Name).ToList(),
+                    },
+                    Urls = r.Url,
+                }).FirstOrDefault();
 
-                _logger.LogInformation("Room retrieved successfully: {Id}", request.Id);
+                _logger.LogInformation("Room: {Id} retrieved successfully", request.Id);
 
                 return Result<GetRoomByIdResponseDto>.SuccessResult(roomDto);
             }
@@ -68,6 +84,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
             }
         }
     }
+
     public class GetRoomByIdResponseDto
     {
         public int Id { get; set; }
@@ -75,8 +92,23 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
         public decimal Price { get; set; }
         public string Status { get; set; }
         public DateTime DateCreated { get; set; }
-        public int RoomTypeId { get; set; }
-        public int RoomAmenitiesId { get; set; }
+        public RoomTypeResponseDto RoomType { get; set; }
+        public RoomAmenitiesResponseDto RoomAmenities { get; set; }
         public List<string> Urls { get; set; }
+    }
+
+    public class RoomTypeResponseDto
+    {
+        public int Id { get; set; }
+        public string TypeName { get; set; }
+        public string Description { get; set; }
+        public string AccessibilityFeatures { get; set; }
+    }
+
+    public class RoomAmenitiesResponseDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public List<string> Amenities { get; set; }
     }
 }
