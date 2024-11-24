@@ -25,7 +25,7 @@ namespace MyHotelManagementDemoService.API.Controllers
             return StatusCode((int)room.statusCode, room.Success ? room.Data : room.Message);
         }
         [HttpPut("Update-room/{id}")]
-        public async Task<IActionResult> UpdateRoom(int id, [FromBody] UpdateRoomRequestDto requestDto)
+        public async Task<IActionResult> UpdateRoom(int id, [FromForm] UpdateRoomRequestDto requestDto)
         {
             var result = await _mediator.Send(new UpdateRoom(id, requestDto));
             return StatusCode((int)result.statusCode, result.Success ? result.Data : result.Message);

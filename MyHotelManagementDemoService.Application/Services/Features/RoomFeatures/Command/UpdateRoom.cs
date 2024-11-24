@@ -1,6 +1,8 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using MyHotelManagementDemoService.Application.Contracts.FileStorage;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
 using MyHotelManagementDemoService.Application.Dtos.Request;
 using MyHotelManagementDemoService.Application.Dtos.Response;
@@ -29,11 +31,13 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<UpdateRoomHandler> _logger;
+        private readonly IFileStorageService _fileStorageService;
 
-        public UpdateRoomHandler(IUnitOfWork unitOfWork, ILogger<UpdateRoomHandler> logger)
+        public UpdateRoomHandler(IUnitOfWork unitOfWork, ILogger<UpdateRoomHandler> logger, IFileStorageService fileStorageService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task<Result<UpdateRoomResponseDto>> Handle(UpdateRoom request, CancellationToken cancellationToken)
@@ -54,6 +58,14 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                 roomEntity.RoomTypeId = request.RequestDto.RoomTypeId;
                 roomEntity.RoomAmenitiesId = request.RequestDto.RoomAmenitiesId;
 
+                if (request.RequestDto.Images != null && request.RequestDto.Images.Count > 0)
+                {
+                    _logger.LogInformation("Uploading images for room: {Id}", request.Id);
+
+                    var imageUrls = await _fileStorageService.UploadFilesAsync(request.RequestDto.Images, "images/rooms");
+                    roomEntity.Url = imageUrls;
+                }
+
                 _unitOfWork.roomRepository.Update(roomEntity);
                 await _unitOfWork.Save();
 
@@ -67,7 +79,8 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                     Status = roomEntity.Status,
                     DateUpdated = DateTime.UtcNow,
                     RoomTypeId = roomEntity.RoomTypeId,
-                    RoomAmenitiesId = roomEntity.RoomAmenitiesId
+                    RoomAmenitiesId = roomEntity.RoomAmenitiesId,
+                    Url = roomEntity.Url
                 };
 
                 return Result<UpdateRoomResponseDto>.SuccessResult(responseDto);
@@ -89,6 +102,8 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
         public DateTime DateUpdated { get; set; }
         public int RoomTypeId { get; set; }
         public int RoomAmenitiesId { get; set; }
+        public List<string> Url { get; set; }
+
     }
     public class UpdateRoomRequestDto
     {
@@ -97,5 +112,6 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
         public string Status { get; set; }
         public int RoomTypeId { get; set; }
         public int RoomAmenitiesId { get; set; }
+        public List<IFormFile> Images { get; set; }
     }
 }
