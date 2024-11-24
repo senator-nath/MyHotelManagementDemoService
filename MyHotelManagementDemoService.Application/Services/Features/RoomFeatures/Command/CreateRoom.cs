@@ -1,12 +1,15 @@
 ﻿using BlogApp.Application.Helpers;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using MyHotelManagementDemoService.Application.Contracts.FileStorage;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
 using MyHotelManagementDemoService.Application.Dtos.Request;
 using MyHotelManagementDemoService.Application.Dtos.Response;
 using MyHotelManagementDemoService.Domain.Entities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -28,11 +31,13 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<CreateRoomHandler> _logger;
+        private readonly IFileStorageService _fileStorageService;
 
-        public CreateRoomHandler(IUnitOfWork unitOfWork, ILogger<CreateRoomHandler> logger)
+        public CreateRoomHandler(IUnitOfWork unitOfWork, ILogger<CreateRoomHandler> logger, IFileStorageService fileStorageService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task<Result<CreateRoomResponseDto>> Handle(CreateRoom request, CancellationToken cancellationToken)
@@ -48,6 +53,11 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                     _logger.LogError("Room already exists");
                     return Result<CreateRoomResponseDto>.Conflict("Room already exists");
                 }
+                var imageUrls = new List<string>();
+                if (request.RequestDto.Images != null && request.RequestDto.Images.Count > 0)
+                {
+                    imageUrls = await _fileStorageService.UploadFilesAsync(request.RequestDto.Images, "images/rooms");
+                }
 
                 var roomEntity = new Room
                 {
@@ -56,7 +66,8 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                     Status = request.RequestDto.Status,
                     DateCreated = DateTime.UtcNow,
                     RoomTypeId = request.RequestDto.RoomTypeId,
-                    RoomAmenitiesId = request.RequestDto.RoomAmenitiesId
+                    RoomAmenitiesId = request.RequestDto.RoomAmenitiesId,
+                    Url = imageUrls
                 };
 
                 await _unitOfWork.roomRepository.AddAsync(roomEntity);
@@ -72,7 +83,9 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
                     Status = roomEntity.Status,
                     DateCreated = roomEntity.DateCreated,
                     RoomTypeId = roomEntity.RoomTypeId,
-                    RoomAmenitiesId = roomEntity.RoomAmenitiesId
+                    RoomAmenitiesId = roomEntity.RoomAmenitiesId,
+                    Url = roomEntity.Url
+
                 };
 
                 return Result<CreateRoomResponseDto>.SuccessResult(responseDto);
@@ -91,6 +104,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
         public string Status { get; set; }
         public int RoomTypeId { get; set; }
         public int RoomAmenitiesId { get; set; }
+        public List<IFormFile> Images { get; set; }
     }
     public class CreateRoomResponseDto
     {
@@ -101,6 +115,7 @@ namespace MyHotelManagementDemoService.Application.Services.Features.RoomFeature
         public DateTime DateCreated { get; set; }
         public int RoomTypeId { get; set; }
         public int RoomAmenitiesId { get; set; }
+        public List<string> Url { get; set; }
     }
 
 }

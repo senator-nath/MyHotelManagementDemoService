@@ -19,7 +19,7 @@ namespace MyHotelManagementDemoService.API.Controllers
             _mediator = mediator;
         }
         [HttpPost("create-room")]
-        public async Task<IActionResult> CreateRoom([FromBody] CreateRoomRequestDto requestDto)
+        public async Task<IActionResult> CreateRoom([FromForm] CreateRoomRequestDto requestDto)
         {
             var room = await _mediator.Send(new CreateRoom(requestDto));
             return StatusCode((int)room.statusCode, room.Success ? room.Data : room.Message);

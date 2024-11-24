@@ -51,6 +51,7 @@ namespace MyHotelManagementDemoService.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseStaticFiles();
             app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
             app.UseAuthorization();

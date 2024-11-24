@@ -17,10 +17,10 @@ namespace MyHotelManagementDemoService.API
         {
             Log.Logger = new LoggerConfiguration()
         .ReadFrom.Configuration(CreateHostBuilder(args).Build().Services.GetRequiredService<IConfiguration>())
-        .MinimumLevel.Debug()
-        .Enrich.FromLogContext()
-        .WriteTo.Console()
-        .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
+        //.MinimumLevel.Debug()
+        //.Enrich.FromLogContext()
+        //.WriteTo.Console()
+        //.WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
         .CreateLogger();
 
             try

@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MyHotelManagementDemoService.Application.Contracts.FileStorage;
 using MyHotelManagementDemoService.Application.Contracts.UnitofWork;
 using MyHotelManagementDemoService.Domain.Entities;
 using MyHotelManagementDemoService.Persistence.Data;
+using MyHotelManagementDemoService.Persistence.Implementation.FileStorage;
 using MyHotelManagementDemoService.Persistence.Implementation.UnitOfWork;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,7 @@ namespace MyHotelManagementDemoService.Persistence
         public static IServiceCollection AddPersistenceService(this IServiceCollection services, IConfiguration config)
         {
             services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IFileStorageService, FileStorageService>();
             services.AddDbContext<HotelManagementDbContext>(Options => Options.UseSqlServer(config.GetConnectionString("defaultConnection")));
             services.AddIdentity<User, IdentityRole>()
         .AddEntityFrameworkStores<HotelManagementDbContext>()
